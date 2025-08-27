@@ -1,0 +1,195 @@
+@startuml
+entity "USERS" {
++id: BIGINT <<PK>>
+*name: VARCHAR(255)
+*email: VARCHAR(255)
+*password: VARCHAR(255)
+*role_id: INTEGER <<FK>>
+*create_at: DATETIME(6)
+*is_active: BIT(1)
+}
+entity "VERIFICATION_CODES" {
+  +id: BIGINT <<PK>>
+  +user_id: BIGINT <<FK>>
+  *create_at: DATETIME(6)
+  *expire_at: DATETIME(6)
+  *token: VARCHAR(255)
+}
+USERS "1" -- "0..*" VERIFICATION_CODES : has
+entity "ROLES" {
++id: INTEGER <<PK>>
+*name: VARCHAR(20)
+*description: VARCHAR(255)
+}
+ROLES "1" --"0..*" USERS : has
+entity "RESET_PASSWORD_TOKENS" {
+  +id: INTEGER <<PK>>
+  +user_id: BIGINT <<FK>>
+  *create_at: DATETIME(6)
+  *expire_at: DATETIME(6)
+  *token: VARCHAR(255)
+}
+USERS "1" -- "0..*" RESET_PASSWORD_TOKENS : has
+entity "CATEGORIES" {
++id: BIGITNT <<PK>>
+*name: VARCHAR(255)
+*description: VARCHAR(255)
+*image: VARCHAR(255)
++parent_id: BIGINT <<FK>>
+} 
+CATEGORIES "0" --"0..*" CATEGORIES: has child
+entity "PRODUCTS" {
++id: BIGINT <<PK>> 
++category_id: BIGINT <<FK>>
+*name:VARCHAR(255)
+*short_desc: VARCHAR(255)
+*detail_desc: VARCHAR(255)
+*create_at: DATETIME(6)
+*update_at: DATETIME(6)
+*delete_at: DATETIME(6)
+*rating: FLOAT
+*min_price: FLOAT
+*max_price: FLOAT,
+*quantity:BIGINT,
+*sold: BIGINT,
+} 
+CATEGORIES "1" -- "0..*" PRODUCTS : has
+entity "PRODUCT_VARIANTS" {
++id: BIGINT <<PK>>
++product_id: BIGINT <<FK>>
+*name:VARCHAR(255)
+*short_desc: VARCHAR(255)
+*detail_desc: VARCHAR(255)
+*create_at: DATETIME(6)
+*update_at: DATETIME(6)
+*delete_at: DATETIME(6)
+
+*price:FLOAT,
+
+}
+
+PRODUCTS "1" --"0..*" PRODUCT_VARIANTS: has variant
+
+entity "PRODUCT_ATTRIBUTES" {
++id: BIGINT <<PK>>
++product_variant_id: BIGINT <<FK>>
+*name: VARCHAR(255)
+*value:VARCHAR(255)
+*create_at: DATETIME(6)
+*update_at: DATETIME(6)
+*delete_at: DATETIME(6)
+*quantity:INTEGER
+
+
+}
+entity "LOG" {
+  +id: BIGINT <<FK>>
+  *method:VARCHAR(255)
+  *url_api: VARCHAR(255) 
+  *response_message: VARCHAR(255)
+  *code: INTEGER
+  *status: VARCHAR(255)
+  *create_at: DATETIME(6)
+  *ip: VARCHAR(255)
+}
+
+
+
+PRODUCT_VARIANTS "1" -- "0..*" PRODUCT_ATTRIBUTES: has attribute 
+ entity "WISHLIST" { 
+ +id: BIGINT <<PK>>
+ +user_id: BIGINT<<FK>>
+ +product_id : BIGINT <<FK>>
+ *create_at: DATETIME(6)
+*update_at: DATETIME(6)
+ }
+ USERS "1" -- "0..*" WISHLIST: has favourite product
+ PRODUCTS "1" --"0..*" WISHLIST: in wishlist
+ 
+ entity "CART" {
+ +id: BIGINT <<PK>>
+ +user_id: BIGINT <<FK>>
+ *amount:INTEGER
+ *create_at: DATETIME(6)
+*update_at: DATETIME(6)
+ }
+ USERS "1" -- "0..1" CART: has
+ entity "CART_ITEMS" { 
+ +id: BIGINT <<PK>>
+ +cart_id: BIGINT <<FK>>
+ +product_variant_id: BIGINT <<FK>>
+ *amount:INTEGER
+ }
+ CART "1" -- "0..*" CART_ITEMS: has
+ entity "ORDERS" {
+ +id: BIGINT <<PK>>
+ +user_id: BIGINT <<FK>>
+ *create_at: DATETIME(6)
+ *update_at: DATETIME(6)
+ *status: VARCHAR(255)
+ *shipping_fee: FLOAT
+ *total:FLOAT
+ *status: VARCHAR(50)
+ }
+ USERS "1" -- "0..*" ORDERS: order
+ entity "ORDER_ITEMS" {
+ +id: BIGINT <<PK>>
+ +order_id: BIGINT <<FK>>
+ +product_variant_id: BIGINT <<FK>>
+ *amount: INTEGER
+ *total_price: FLOAT
+ }
+ ORDERS "1" --"1..*" ORDER_ITEMS: has
+ PRODUCT_VARIANTS "1" -- "0..*" ORDER_ITEMS: has
+ entity "PAYMENTS" { 
+ +id: BIGINT <<PK>>
+ +order_id: BIGINT <<FK>>
+ *currency: VARCHAR(255)
+ *total: FLOAT
+ *create_at: DATETIME(6)
+ *update_at: DATETIME(6)
+ *provider: VARCHAR(255)
+ *status: VARCHAR(255)
+ }
+ ORDERS "1" --"0..1" PAYMENTS: has
+entity "DISCOUNT_TYPES" { 
+  +id: INTEGER <<PK>>
+  *name: VARCHAR(255)
+  *description: VARCHAR(255)
+}
+entity "COUPONS" { 
+  +id: BIGINT <<PK>>
+  +discount_type_id: BIGINT <<FK>>
+  +product_id: BIGINT <<FK>>
+  *discount: FLOAT
+  *create_at: DATETIME(6)
+  *update_at: DATETIME(6)
+  *start_at: DATETIME(6)
+  *end_at: DATETIME(6)
+}
+PRODUCTS "1" -- "0..*" COUPONS: has
+DISCOUNT_TYPES "1"--"0..*" COUPONS: has
+entity "REVIEWS" {
+    +id: BIGINT<<PK>>
+    +product_id: BIGINT<<FK>>
+    +user_id: BIGINT<<FK>>
+    *rating: INTEGER
+    *content: VARCHAR(255)
+    *status: VARCHAR(50) 
+    *create_at: DATETIME(6)
+    *update_at: DATETIME(6)
+    *delete_at: DATETIME(6)
+}
+PRODUCTS "1" -- "0..*" REVIEWS: has
+USERS "1" -- "0..*" REVIEWS: has
+entity "NOTIFICATIONS" {
+    +id: BIGINT<<PK>>
+    +user_id: BIGINT<<FK>>
+    *title: VARCHAR(255)
+    *content: VARCHAR(255)
+    *status: VARCHAR(50) 
+    *create_at:DATETIME(6)
+}
+USERS "1" --"0..*" NOTIFICATIONS: has
+
+@enduml
