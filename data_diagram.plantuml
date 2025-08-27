@@ -4,8 +4,10 @@ entity "USERS" {
 *name: VARCHAR(255)
 *email: VARCHAR(255)
 *password: VARCHAR(255)
+*auth_provider: VARCHAR(255)
 *role_id: INTEGER <<FK>>
 *create_at: DATETIME(6)
+*update_at: DATETIME(6)
 *is_active: BIT(1)
 }
 entity "VERIFICATION_CODES" {
@@ -46,12 +48,12 @@ entity "PRODUCTS" {
 *detail_desc: VARCHAR(255)
 *create_at: DATETIME(6)
 *update_at: DATETIME(6)
-*delete_at: DATETIME(6)
 *rating: FLOAT
 *min_price: FLOAT
 *max_price: FLOAT,
 *quantity:BIGINT,
 *sold: BIGINT,
+*is_enable:boolean
 } 
 CATEGORIES "1" -- "0..*" PRODUCTS : has
 entity "PRODUCT_VARIANTS" {
@@ -62,7 +64,9 @@ entity "PRODUCT_VARIANTS" {
 *detail_desc: VARCHAR(255)
 *create_at: DATETIME(6)
 *update_at: DATETIME(6)
-*delete_at: DATETIME(6)
+*isEnable: BOOLEAN
+*quantity: BIGINT
+*sold: BIGINT
 
 *price:FLOAT,
 
@@ -77,10 +81,7 @@ entity "PRODUCT_ATTRIBUTES" {
 *value:VARCHAR(255)
 *create_at: DATETIME(6)
 *update_at: DATETIME(6)
-*delete_at: DATETIME(6)
-*quantity:INTEGER
-
-
+*isEnable:BOOLEAN
 }
 entity "LOG" {
   +id: BIGINT <<FK>>
@@ -90,6 +91,7 @@ entity "LOG" {
   *code: INTEGER
   *status: VARCHAR(255)
   *create_at: DATETIME(6)
+  *user_id: VARCHAR(255)
   *ip: VARCHAR(255)
 }
 
@@ -129,7 +131,6 @@ PRODUCT_VARIANTS "1" -- "0..*" PRODUCT_ATTRIBUTES: has attribute
  *status: VARCHAR(255)
  *shipping_fee: FLOAT
  *total:FLOAT
- *status: VARCHAR(50)
  }
  USERS "1" -- "0..*" ORDERS: order
  entity "ORDER_ITEMS" {
@@ -152,14 +153,10 @@ PRODUCT_VARIANTS "1" -- "0..*" PRODUCT_ATTRIBUTES: has attribute
  *status: VARCHAR(255)
  }
  ORDERS "1" --"0..1" PAYMENTS: has
-entity "DISCOUNT_TYPES" { 
-  +id: INTEGER <<PK>>
-  *name: VARCHAR(255)
-  *description: VARCHAR(255)
-}
+
 entity "COUPONS" { 
   +id: BIGINT <<PK>>
-  +discount_type_id: BIGINT <<FK>>
+  *discount_type:VARCHAR(255)
   +product_id: BIGINT <<FK>>
   *discount: FLOAT
   *create_at: DATETIME(6)
@@ -168,7 +165,7 @@ entity "COUPONS" {
   *end_at: DATETIME(6)
 }
 PRODUCTS "1" -- "0..*" COUPONS: has
-DISCOUNT_TYPES "1"--"0..*" COUPONS: has
+
 entity "REVIEWS" {
     +id: BIGINT<<PK>>
     +product_id: BIGINT<<FK>>
@@ -178,7 +175,7 @@ entity "REVIEWS" {
     *status: VARCHAR(50) 
     *create_at: DATETIME(6)
     *update_at: DATETIME(6)
-    *delete_at: DATETIME(6)
+    
 }
 PRODUCTS "1" -- "0..*" REVIEWS: has
 USERS "1" -- "0..*" REVIEWS: has
@@ -189,6 +186,7 @@ entity "NOTIFICATIONS" {
     *content: VARCHAR(255)
     *status: VARCHAR(50) 
     *create_at:DATETIME(6)
+    *update_at:DATETIME(6)
 }
 USERS "1" --"0..*" NOTIFICATIONS: has
 

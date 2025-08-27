@@ -7,7 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class WebbanghangApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(WebbanghangApplication.class, args);
+		
+		SpringApplication.run(WebbanghangApplication.class, args); 
+		System.out.println(System.getenv("DATABASE_URL"));
 	}
 
 }

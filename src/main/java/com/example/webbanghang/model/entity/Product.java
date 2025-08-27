@@ -1,0 +1,154 @@
+package com.example.webbanghang.model.entity;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="PRODUCTS")
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    private int id; 
+    @ManyToOne
+    @JoinColumn(name="category_id") 
+    private Category category; 
+    private String name;
+    private String shortDesc;
+    private String detailDesc;
+    private Date create_at;
+    private Date update_at;
+    private float rating;
+    private float minPrice;
+    private float maxPrice;
+    private long quantity;
+    private long sold;
+    private boolean isEnable;
+    @OneToMany(mappedBy = "product") 
+    private List<ProductVariant> productVatiants;
+    
+    public Category getCategory() {
+        return category;
+    }
+    public List<ProductVariant> getProductVatiants() {
+        return productVatiants;
+    }
+    public void setProductVatiants(List<ProductVariant> productVatiants) {
+        this.productVatiants = productVatiants;
+    }
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public String getShortDesc() {
+        return shortDesc;
+    }
+    public void setShortDesc(String shortDesc) {
+        this.shortDesc = shortDesc;
+    }
+    public String getDetailDesc() {
+        return detailDesc;
+    }
+    public void setDetailDesc(String detailDesc) {
+        this.detailDesc = detailDesc;
+    }
+    public Date getCreate_at() {
+        return create_at;
+    }
+    public void setCreate_at(Date create_at) {
+        this.create_at = create_at;
+    }
+    public Date getUpdate_at() {
+        return update_at;
+    }
+    public void setUpdate_at(Date update_at) {
+        this.update_at = update_at;
+    }
+    public float getRating() {
+        return rating;
+    }
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+    public float getMinPrice() {
+        return minPrice;
+    }
+    public void setMinPrice(float minPrice) {
+        this.minPrice = minPrice;
+    }
+    public float getMaxPrice() {
+        return maxPrice;
+    }
+    public void setMaxPrice(float maxPrice) {
+        this.maxPrice = maxPrice;
+    }
+    public long getQuantity() {
+        return quantity;
+    }
+    public void setQuantity(long quantity) {
+        this.quantity = quantity;
+    }
+    public long getSold() {
+        return sold;
+    }
+    public void setSold(long sold) {
+        this.sold = sold;
+    }
+    public boolean isEnable() {
+        return isEnable;
+    }
+    public void setEnable(boolean isEnable) {
+        this.isEnable = isEnable;
+    } 
+    public void setCategory(Category category) {
+        this.category= category;
+    } 
+    public List<String> getCategories() {
+        List<String> res = new ArrayList<>();
+        Category currentCategory = this.category;
+        while(currentCategory!=null) {
+            res.add(currentCategory.getName());
+            currentCategory=currentCategory.getParent();
+        }
+        return res;
+    }
+    public Product() {
+    }
+    public Product(int id, Category category, String name, String shortDesc, String detailDesc, Date create_at,
+            Date update_at, float rating, float minPrice, float maxPrice, long quantity, long sold, boolean isEnable,
+            List<ProductVariant> productVatiants) {
+        this.id = id;
+        this.category = category;
+        this.name = name;
+        this.shortDesc = shortDesc;
+        this.detailDesc = detailDesc;
+        this.create_at = create_at;
+        this.update_at = update_at;
+        this.rating = rating;
+        this.minPrice = minPrice;
+        this.maxPrice = maxPrice;
+        this.quantity = quantity;
+        this.sold = sold;
+        this.isEnable = isEnable;
+        this.productVatiants = productVatiants;
+    }
+    
+    
+}
