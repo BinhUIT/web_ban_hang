@@ -1,9 +1,18 @@
 package com.example.webbanghang.model.entity;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.webbanghang.model.enums.EAuthProvider;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,12 +24,14 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="users")
-public class User {
+public class User implements UserDetails { 
+    private static final String AUTHORITIES_DELIMETER ="::";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private long id;
     
     private String name;
+    @Column(unique = true)
     private String email;
     private String password;
     private EAuthProvider authProvider;
@@ -107,6 +118,18 @@ public class User {
         this.cart = cart;
     }
     public User() {
+    }
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        String authorities = this.role.getName(); 
+        return Arrays.stream(authorities.split(AUTHORITIES_DELIMETER)).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+
+    }
+    
+    @Override
+    public String getUsername() {
+        return this.email;
     } 
     
 }

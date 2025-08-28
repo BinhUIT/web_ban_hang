@@ -7,5 +7,5 @@ import com.example.webbanghang.model.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-
+    public User findByEmail(String email);
 }
