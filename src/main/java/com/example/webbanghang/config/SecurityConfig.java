@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.example.webbanghang.middleware.PassEncoder;
 import com.example.webbanghang.service.UserService;
@@ -18,8 +19,10 @@ import com.example.webbanghang.service.UserService;
 @EnableWebSecurity
 public class SecurityConfig {
     private final UserService userService;
-    public SecurityConfig(UserService userService) {
+    private final JwtAuthFilter jwtAuthFilter;
+    public SecurityConfig(UserService userService, JwtAuthFilter jwtAuthFilter) {
         this.userService= userService;
+        this.jwtAuthFilter = jwtAuthFilter;
     } 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -32,8 +35,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(httpSecurityCsrfConfigurer->httpSecurityCsrfConfigurer.disable()) 
         .httpBasic(Customizer.withDefaults()) 
-        .authorizeHttpRequests(auth->auth.requestMatchers("/unsecure/**").permitAll())
+        .authorizeHttpRequests(auth->auth.requestMatchers("/unsecure/**").permitAll()
+        .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN") 
+        .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+        .anyRequest().authenticated()
+        )
         .formLogin(Customizer.withDefaults());
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     @Bean

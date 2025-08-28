@@ -25,6 +25,10 @@ public class UserController {
     public String testWithToken() {
         return "Success";
     }
+    @GetMapping("/admin/test") 
+    public String testAdmin() {
+        return "Admin";
+    } 
     @PostMapping("/unsecure/login") 
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         LoginResponse response = userService.login(request);
@@ -33,5 +37,6 @@ public class UserController {
         } 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    
 
 }
