@@ -9,7 +9,7 @@ public class PassEncoder {
         return PassEncoder.passEncoder;
     } 
     public static boolean isPasswordMatch(String hashedPassword, String plainPassword) {
-        return passEncoder.matches(hashedPassword, plainPassword);
+        return passEncoder.matches(plainPassword,hashedPassword);
     }
     public static String hashPassword(String plainPassword) {
         return passEncoder.encode(plainPassword);

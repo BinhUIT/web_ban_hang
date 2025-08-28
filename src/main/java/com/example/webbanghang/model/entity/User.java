@@ -149,5 +149,9 @@ public class User implements UserDetails {
         this.isActive=true;
         this.cart=null;
     }
+    @Override
+    public boolean isAccountNonLocked() {
+        return this.isActive;
+    }
     
 }

@@ -6,10 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.service.OAuth2Service;
@@ -47,14 +49,20 @@ public class UserController {
     public ResponseEntity<LoginResponse> loginViaGoogle(@RequestBody Map<String,String> tokenJSON) {
         String token = tokenJSON.get("token");
         Map<String,Object> result = oAuth2Service.verifyGGTokenAndGenerateToken(token);
+        return getLoginResponseByResult(result);
+    }
+    @PutMapping("/unsecure/link_account") 
+    public ResponseEntity<LoginResponse> linkAccount(@RequestBody LinkAccountRequest request) {
+        Map<String,Object> result = oAuth2Service.linkAccount(request);
+        return getLoginResponseByResult(result);
+        
+    }
+    private ResponseEntity<LoginResponse> getLoginResponseByResult(Map<String,Object> result) {
         Object result_code = result.get("Status code");
         if(result_code instanceof Integer resultCode) {
-            if(resultCode==401) {
-                return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-            } 
-            if(resultCode==419) {
-                return new ResponseEntity<>(null, HttpStatus.valueOf(419));
-            } 
+           if(resultCode!=200) {
+            return new ResponseEntity<>(null, HttpStatus.valueOf(resultCode));
+           }
             Object response = result.get("Data");
             if(response instanceof LoginResponse res) {
                 return new ResponseEntity<>(res, HttpStatus.OK);
@@ -62,6 +70,6 @@ public class UserController {
         }
         return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
+
 
 }

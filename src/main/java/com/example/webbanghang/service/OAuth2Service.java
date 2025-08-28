@@ -10,9 +10,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.webbanghang.middleware.Constants;
+import com.example.webbanghang.middleware.PassEncoder;
 import com.example.webbanghang.model.entity.Role;
 import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.enums.EAuthProvider;
+import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.response.GoogleUserInfo;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.repository.RoleRepository;
@@ -29,14 +31,19 @@ public class OAuth2Service {
         this.roleRepo= roleRepo;
         this.jwtService= jwtService;
     } 
-    public Map<String,Object> verifyGGTokenAndGenerateToken(String token) {
+    public GoogleUserInfo getInfoFromToken(String token) throws HttpClientErrorException { 
         String url = Constants.ggTokenBaseURL+token;
+        RestTemplate restTemplate= new RestTemplate();
+        ResponseEntity<GoogleUserInfo> response = restTemplate.getForEntity(url, GoogleUserInfo.class);
+        return response.getBody();
+        
+    }
+    public Map<String,Object> verifyGGTokenAndGenerateToken(String token) { 
+        Map<String,Object> res = new HashMap<>();
         try {
-            RestTemplate restTemplate= new RestTemplate();
-            ResponseEntity<GoogleUserInfo> response = restTemplate.getForEntity(url, GoogleUserInfo.class);
-            GoogleUserInfo ggUserInfo = response.getBody();
+            GoogleUserInfo ggUserInfo = getInfoFromToken(token);
             User user = userRepo.findByEmail(ggUserInfo.getEmail()); 
-            Map<String,Object> res = new HashMap<>();
+            
             if(user!=null) {
                 
                 if(user.getAuthProvider()==EAuthProvider.DEFAULT) {
@@ -57,10 +64,42 @@ public class OAuth2Service {
             return res;
         }
         catch(HttpClientErrorException e) {
-            Map<String,Object> res = new HashMap<>();
+            
             res.put("Status code", 401);
             return res;
         }
     }
+    public Map<String, Object> linkAccount(LinkAccountRequest request) { 
+        Map<String,Object> res = new HashMap<>();
+        try {
+            GoogleUserInfo googleUserInfo = getInfoFromToken(request.getAccessToken());
+            User user = userRepo.findByEmail(googleUserInfo.getEmail());
+            if(user==null) {   
+            res.put("Status code", 404);
+            return res;
+            }
+            if(user.getAuthProvider()!=EAuthProvider.DEFAULT) {
+                res.put("Status code",400);
+                return res;
+            }
+            if(!user.isAccountNonLocked()||!PassEncoder.isPasswordMatch(user.getPassword(), request.getPassword())) {
+                res.put("Status code", 401);
+                return res;
+            }
+            user.setAuthProvider(EAuthProvider.GOOGLE); 
+            user.setPassword("");
+            user.setUpdateAt(new Date());
+            userRepo.save(user);
+             res.put("Status code",200);
+            LoginResponse loginResponse = new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime+60*1000));
+            res.put("Data",loginResponse);
+            return res;
+        } 
+        catch(HttpClientErrorException e) {
+            res.put("Status code", 401);
+            return res;
+        }
+    }
+    
 
 }
