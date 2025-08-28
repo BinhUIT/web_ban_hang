@@ -19,12 +19,14 @@ import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.repository.UserRepository;
 @Service
 public class UserService implements UserDetailsService {
-    private UserRepository userRepo;
-    private ApplicationContext applicationContext;
+    private final UserRepository userRepo;
+    private final ApplicationContext applicationContext;
+    private final JwtService jwtService;
     
-    public UserService(UserRepository userRepo, ApplicationContext applicationContext) {
+    public UserService(UserRepository userRepo, ApplicationContext applicationContext, JwtService jwtService) {
         this.userRepo= userRepo;
         this.applicationContext= applicationContext;
+        this.jwtService= jwtService;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -40,7 +42,7 @@ public class UserService implements UserDetailsService {
         if(auth.isAuthenticated()) {
             Object userPrincipal = auth.getPrincipal();
             if(userPrincipal instanceof User user) {
-                return new LoginResponse(user, "", new Date(System.currentTimeMillis()+Constants.tokenExpireTime*60*1000));
+                return new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime*60*1000));
             }
             return null;
         }
