@@ -3,7 +3,8 @@ package com.example.webbanghang.service;
 
 import java.util.Date;
 
-import org.springframework.context.ApplicationContext;
+
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,13 +21,15 @@ import com.example.webbanghang.repository.UserRepository;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepo;
-    private final ApplicationContext applicationContext;
-    private final JwtService jwtService;
     
-    public UserService(UserRepository userRepo, ApplicationContext applicationContext, JwtService jwtService) {
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    
+    public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager) {
         this.userRepo= userRepo;
-        this.applicationContext= applicationContext;
+        
         this.jwtService= jwtService;
+        this.authenticationManager= authenticationManager;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,8 +40,8 @@ public class UserService implements UserDetailsService {
         return user;
     }
     public LoginResponse login(LoginRequest request) {
-        AuthenticationManager authManager = applicationContext.getBean(AuthenticationManager.class);
-        Authentication auth = authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+       
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         if(auth.isAuthenticated()) {
             Object userPrincipal = auth.getPrincipal();
             if(userPrincipal instanceof User user) {

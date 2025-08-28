@@ -9,7 +9,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+
 import com.example.webbanghang.model.enums.EAuthProvider;
+import com.example.webbanghang.model.response.GoogleUserInfo;
+import com.example.webbanghang.repository.RoleRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -134,5 +137,17 @@ public class User implements UserDetails {
     public String getUsername() {
         return this.email;
     } 
+    public User(GoogleUserInfo googleUserInfo, Role role) {
+        this.name= googleUserInfo.getName();
+        this.email= googleUserInfo.getEmail();
+        this.password="";
+        this.authProvider= EAuthProvider.GOOGLE;
+        
+        this.role=role;
+        this.createAt= new Date();
+        this.updateAt= null;
+        this.isActive=true;
+        this.cart=null;
+    }
     
 }
