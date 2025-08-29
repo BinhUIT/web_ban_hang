@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.webbanghang.model.entity.ProductVariant;
 
 @Repository
-public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long>{
+public interface ProductVariantRepository extends JpaRepository<ProductVariant, Integer>{
 
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.webbanghang.model.entity.Order;
 @Repository
-public interface OrderRepository extends JpaRepository<Order,Long> {
+public interface OrderRepository extends JpaRepository<Order,Integer> {
 
     public List<Order> findByUser_Id(long userId);
 
