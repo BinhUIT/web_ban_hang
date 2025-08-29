@@ -9,6 +9,8 @@ entity "USERS" {
 *create_at: DATETIME(6)
 *update_at: DATETIME(6)
 *is_active: BIT(1)
+*phone: VARCHAR(255) 
+*address: VARCHAR(255)
 }
 entity "VERIFICATION_CODES" {
   +id: BIGINT <<PK>>
@@ -177,6 +179,12 @@ entity "REVIEWS" {
     *update_at: DATETIME(6)
     
 }
+entity "PRODUCT_VARIANT_IMAGES" {
+  +id: BIGINT <<PK>> 
+  +product_variant_id:BIGINT<<PK>>
+  *image_path:VARCHAR(255)
+}
+PRODUCT_VARIANTS "1"--"0..*" PRODUCT_VARIANT_IMAGES: has 
 PRODUCTS "1" -- "0..*" REVIEWS: has
 USERS "1" -- "0..*" REVIEWS: has
 entity "NOTIFICATIONS" {
@@ -189,5 +197,16 @@ entity "NOTIFICATIONS" {
     *update_at:DATETIME(6)
 }
 USERS "1" --"0..*" NOTIFICATIONS: has
-
+entity "TAGS" {
+  +id: BIGINT<<PK>>
+  *name: VARCHAR(255) 
+  *image: VARCHAR(255)
+}
+entity "PRODUCT_TAGS" {
+  +id: BIGINT<<PK>>
+  +product_id: BIGINT<<FK>>
+  +tag_id: BIGINT<<FK>>
+}
+PRODUCTS "1" -- "0..*" PRODUCT_TAGS: has
+TAGS "1" -- "0..*" PRODUCT_TAGS: has
 @enduml

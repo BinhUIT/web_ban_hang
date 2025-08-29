@@ -9,10 +9,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 import com.example.webbanghang.model.enums.EAuthProvider;
 import com.example.webbanghang.model.response.GoogleUserInfo;
-import com.example.webbanghang.repository.RoleRepository;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -49,6 +47,8 @@ public class User implements UserDetails {
     private boolean isActive;
     @OneToOne(mappedBy = "user") 
     private Cart cart;
+    private String phone;
+    private String address;
     
     public long getId() {
         return id;
@@ -110,8 +110,9 @@ public class User implements UserDetails {
     public void setCart(Cart cart) {
         this.cart = cart;
     }
+
     public User(long id, String name, String email, String password, EAuthProvider authProvider, Role role,
-            Date createAt, Date updateAt, boolean isActive, Cart cart) {
+            Date createAt, Date updateAt, boolean isActive, Cart cart, String phone, String address) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -122,8 +123,23 @@ public class User implements UserDetails {
         this.updateAt = updateAt;
         this.isActive = isActive;
         this.cart = cart;
+        this.address=address;
+        this.phone= phone;
     }
     public User() {
+    }
+
+    public String getAddress() {
+        return this.address;
+    } 
+    public void setAddress(String address) {
+        this.address= address;
+    } 
+    public String getPhone() {
+        return this.phone;
+    } 
+    public void setPhone(String phone) { 
+        this.phone = phone;
     }
     @Override
     @JsonIgnore
