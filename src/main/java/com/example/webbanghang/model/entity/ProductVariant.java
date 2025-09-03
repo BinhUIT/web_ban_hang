@@ -1,8 +1,8 @@
 package com.example.webbanghang.model.entity;
 
 import java.util.Date;
-import java.util.List;
 
+import com.example.webbanghang.model.enums.EEntitySatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,23 +23,81 @@ public class ProductVariant {
     @JoinColumn(name="product_id") 
     @JsonIgnore
     private Product product;
+    @ManyToOne
+    @JoinColumn(name="product_color_id") 
+    private ProductColor productColor;
+    @ManyToOne
+    @JoinColumn(name="product_size_id") 
+    private ProductSize productSize;
+    private float price;
+    private long quantity;
+    private String image;
     private String name;
-    private String shortDesc;
-    private String detailDesc;
     private Date createAt;
     private Date updateAt;
-    private boolean isEnable;
-    private long quantity;
-    private long sold;
-    private float price;
-    @OneToMany(mappedBy = "productVariant") 
-    private List<ProductAttribute> productAttributes;
-    
+    private EEntitySatus status;
     public ProductVariant() {
     }
+
+    
+
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+
+
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
+    }
+
+
+
+    public Date getUpdateAt() {
+        return updateAt;
+    }
+
+
+
+    public void setUpdateAt(Date updateAt) {
+        this.updateAt = updateAt;
+    }
+
+
+
+    public EEntitySatus getStatus() {
+        return status;
+    }
+
+
+
+    public void setStatus(EEntitySatus status) {
+        this.status = status;
+    }
+
+
+
+    public ProductVariant(int id, Product product, ProductColor productColor, ProductSize productSize, float price,
+            long quantity, String image, String name, Date createAt, Date updateAt, EEntitySatus status) {
+        this.id = id;
+        this.product = product;
+        this.productColor = productColor;
+        this.productSize = productSize;
+        this.price = price;
+        this.quantity = quantity;
+        this.image = image;
+        this.name = name;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
+        this.status = status;
+    }
+
+
+
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -48,84 +105,60 @@ public class ProductVariant {
     public Product getProduct() {
         return product;
     }
+
     public void setProduct(Product product) {
         this.product = product;
     }
-    public String getName() {
-        return name;
+
+    public ProductColor getProductColor() {
+        return productColor;
     }
-    public void setName(String name) {
-        this.name = name;
+
+    public void setProductColor(ProductColor productColor) {
+        this.productColor = productColor;
     }
-    public String getShortDesc() {
-        return shortDesc;
+
+    public ProductSize getProductSize() {
+        return productSize;
     }
-    public void setShortDesc(String shortDesc) {
-        this.shortDesc = shortDesc;
+
+    public void setProductSize(ProductSize productSize) {
+        this.productSize = productSize;
     }
-    public String getDetailDesc() {
-        return detailDesc;
-    }
-    public void setDetailDesc(String detailDesc) {
-        this.detailDesc = detailDesc;
-    }
-    public Date getCreateAt() {
-        return createAt;
-    }
-    public void setCreateAt(Date createAt) {
-        this.createAt = createAt;
-    }
-    public Date getUpdateAt() {
-        return updateAt;
-    }
-    public void setUpdateAt(Date updateAt) {
-        this.updateAt = updateAt;
-    }
-    public boolean isEnable() {
-        return isEnable;
-    }
-    public void setEnable(boolean isEnable) {
-        this.isEnable = isEnable;
-    }
-    public long getQuantity() {
-        return quantity;
-    }
-    public void setQuantity(long quantity) {
-        this.quantity = quantity;
-    }
-    public long getSold() {
-        return sold;
-    }
-    public void setSold(long sold) {
-        this.sold = sold;
-    }
+
     public float getPrice() {
         return price;
     }
+
     public void setPrice(float price) {
         this.price = price;
     }
-    public List<ProductAttribute> getProductAttributes() {
-        return productAttributes;
+
+    public long getQuantity() {
+        return quantity;
     }
-    public void setProductAttributes(List<ProductAttribute> productAttributes) {
-        this.productAttributes = productAttributes;
-    }
-    public ProductVariant(int id, Product product, String name, String shortDesc, String detailDesc, Date createAt,
-            Date updateAt, boolean isEnable, long quantity, long sold, float price,
-            List<ProductAttribute> productAttributes) {
-        this.id = id;
-        this.product = product;
-        this.name = name;
-        this.shortDesc = shortDesc;
-        this.detailDesc = detailDesc;
-        this.createAt = createAt;
-        this.updateAt = updateAt;
-        this.isEnable = isEnable;
+
+    public void setQuantity(long quantity) {
         this.quantity = quantity;
-        this.sold = sold;
-        this.price = price;
-        this.productAttributes = productAttributes;
     }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    
+   
     
 }

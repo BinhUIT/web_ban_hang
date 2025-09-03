@@ -56,35 +56,37 @@ entity "PRODUCTS" {
 *quantity:BIGINT,
 *sold: BIGINT,
 *is_enable:boolean
+*image: VARCHAR(255)
+*status: INTEGER 
+*start_sold: DATE,
+*end_sold: DATE
+*origin_price:FLOAT
+*current_price:FLOAT 
+*is_on_sale:BOOLEAN
 } 
 CATEGORIES "1" -- "0..*" PRODUCTS : has
 entity "PRODUCT_VARIANTS" {
-+id: BIGINT <<PK>>
-+product_id: BIGINT <<FK>>
-*name:VARCHAR(255)
-*short_desc: VARCHAR(255)
-*detail_desc: VARCHAR(255)
-*create_at: DATETIME(6)
-*update_at: DATETIME(6)
-*isEnable: BOOLEAN
-*quantity: BIGINT
-*sold: BIGINT
-
-*price:FLOAT,
-
+  +id: BIGINT <<PK>>
+  +color_id: BIGINT<<FK>>
+  +size_id: BIGINT <<FK>> 
+  *price: FLOAT 
+  *quantity: BIGINT
+  *image: VARCHAR(255)
+  *name: VARCHAR(255)
 }
-
+entity "PRODUCT_COLORS" {
+  +id: BIGINT<<PK>>
+  *color_code: BIGINT
+} 
+entity "PRODUCT_SIZES" {
+  +id: BIGINT<<PK>> 
+  *size_code: BIGINT 
+}  
 PRODUCTS "1" --"0..*" PRODUCT_VARIANTS: has variant
+PRODUCT_COLORS "1" -- "0..*" PRODUCT_VARIANTS: has 
+PRODUCT_SIZES "1" -- "0..*" PRODUCT_VARIANTS: has
 
-entity "PRODUCT_ATTRIBUTES" {
-+id: BIGINT <<PK>>
-+product_variant_id: BIGINT <<FK>>
-*name: VARCHAR(255)
-*value:VARCHAR(255)
-*create_at: DATETIME(6)
-*update_at: DATETIME(6)
-*isEnable:BOOLEAN
-}
+
 entity "LOG" {
   +id: BIGINT <<FK>>
   *method:VARCHAR(255)
@@ -99,7 +101,7 @@ entity "LOG" {
 
 
 
-PRODUCT_VARIANTS "1" -- "0..*" PRODUCT_ATTRIBUTES: has attribute 
+
  entity "WISHLIST" { 
  +id: BIGINT <<PK>>
  +user_id: BIGINT<<FK>>
@@ -133,6 +135,8 @@ PRODUCT_VARIANTS "1" -- "0..*" PRODUCT_ATTRIBUTES: has attribute
  *status: VARCHAR(255)
  *shipping_fee: FLOAT
  *total:FLOAT
+ *address: VARCHAR(255)
+ *phone: VARCHAR(255)
  }
  USERS "1" -- "0..*" ORDERS: order
  entity "ORDER_ITEMS" {
@@ -179,12 +183,7 @@ entity "REVIEWS" {
     *update_at: DATETIME(6)
     
 }
-entity "PRODUCT_VARIANT_IMAGES" {
-  +id: BIGINT <<PK>> 
-  +product_variant_id:BIGINT<<PK>>
-  *image_path:VARCHAR(255)
-}
-PRODUCT_VARIANTS "1"--"0..*" PRODUCT_VARIANT_IMAGES: has 
+
 PRODUCTS "1" -- "0..*" REVIEWS: has
 USERS "1" -- "0..*" REVIEWS: has
 entity "NOTIFICATIONS" {
@@ -209,4 +208,8 @@ entity "PRODUCT_TAGS" {
 }
 PRODUCTS "1" -- "0..*" PRODUCT_TAGS: has
 TAGS "1" -- "0..*" PRODUCT_TAGS: has
+
+
+
+
 @enduml
