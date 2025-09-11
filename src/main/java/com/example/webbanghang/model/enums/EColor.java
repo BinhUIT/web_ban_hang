@@ -10,7 +10,7 @@ public enum EColor {
     YELLOW,
     GRAY,
     BROWN,
-    ORAGNE,
+    ORANGE,
     PINK
 
 }

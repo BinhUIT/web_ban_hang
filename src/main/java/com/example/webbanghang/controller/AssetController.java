@@ -27,7 +27,7 @@ public class AssetController {
                 .body(resource);
         } catch (MalformedURLException e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
+           
             return ResponseEntity.internalServerError().body(null);
         }
 

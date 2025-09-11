@@ -1,0 +1,35 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "synonym_filter": {
+          "type": "synonym",
+          "synonyms": [
+            "dresses, gown, apparel, attire, clothing, garb",
+            "t-shirt, tshirt, tee"
+          ]
+        }
+      },
+      "analyzer": {
+        "synonym_analyzer": {
+          "tokenizer": "standard",
+          "filter": ["lowercase", "synonym_filter"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "name": {
+        "type": "text",
+        "analyzer": "synonym_analyzer"
+      },
+      "shortDesc": {
+        "type": "text"
+      },
+      "detailDesc": {
+        "type": "text"
+      }
+    }
+  }
+}

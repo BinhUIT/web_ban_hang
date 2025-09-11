@@ -11,5 +11,7 @@ import com.example.webbanghang.model.entity.Category;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long>{
-    public List<Category> findByParentIsNull();
+    
+    public List<Category> findByParentIdOrName(Long parentId, String name);
+    public Category findFirstByName(String name);
 }

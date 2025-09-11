@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -28,22 +30,23 @@ public class Product {
     private Date create_at;
     private Date update_at;
     private float rating;
-    private float minPrice;
-    private float maxPrice;
+    private int minPrice;
+    private int maxPrice;
     private long quantity;
     private long sold;
     private boolean isEnable;
+    private String image;
     @OneToMany(mappedBy = "product") 
-    private List<ProductVariant> productVatiants;
-    
+    private List<ProductVariant> productVariants;
+    @JsonIgnore
     public Category getCategory() {
         return category;
     }
-    public List<ProductVariant> getProductVatiants() {
-        return productVatiants;
+    public List<ProductVariant> getProductVariants() {
+        return productVariants;
     }
-    public void setProductVatiants(List<ProductVariant> productVatiants) {
-        this.productVatiants = productVatiants;
+    public void setProductVariants(List<ProductVariant> productVariants) {
+        this.productVariants = productVariants;
     }
     public int getId() {
         return id;
@@ -90,13 +93,13 @@ public class Product {
     public float getMinPrice() {
         return minPrice;
     }
-    public void setMinPrice(float minPrice) {
+    public void setMinPrice(int minPrice) {
         this.minPrice = minPrice;
     }
     public float getMaxPrice() {
         return maxPrice;
     }
-    public void setMaxPrice(float maxPrice) {
+    public void setMaxPrice(int maxPrice) {
         this.maxPrice = maxPrice;
     }
     public long getQuantity() {
@@ -132,8 +135,8 @@ public class Product {
     public Product() {
     }
     public Product(int id, Category category, String name, String shortDesc, String detailDesc, Date create_at,
-            Date update_at, float rating, float minPrice, float maxPrice, long quantity, long sold, boolean isEnable,
-            List<ProductVariant> productVatiants) {
+            Date update_at, float rating, int minPrice, int maxPrice, long quantity, long sold, boolean isEnable,
+            String image, List<ProductVariant> productVariants) {
         this.id = id;
         this.category = category;
         this.name = name;
@@ -147,8 +150,16 @@ public class Product {
         this.quantity = quantity;
         this.sold = sold;
         this.isEnable = isEnable;
-        this.productVatiants = productVatiants;
+        this.image = image;
+        this.productVariants = productVariants;
     }
+    public String getImage() {
+        return image;
+    }
+    public void setImage(String image) {
+        this.image = image;
+    }
+    
     
     
 }

@@ -27,8 +27,10 @@ public class Category {
     @JoinColumn(name="parent_id", nullable=true) 
     private Category parent;
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL) 
+    
     private List<Category> children;
     @OneToMany(mappedBy = "category") 
+    @JsonIgnore
     private List<Product> products;
     public long getId() {
         return id;
@@ -62,6 +64,7 @@ public class Category {
     public void setParent(Category parent) {
         this.parent = parent;
     }
+    
     public List<Category> getChildren() {
         return children;
     }
@@ -81,7 +84,7 @@ public class Category {
         this.children = children;
         this.products = products;
     }
-
+    @JsonIgnore
     public List<Product> getProducts() {
         return products;
     }
@@ -89,7 +92,12 @@ public class Category {
     public void setProducts(List<Product> products) {
         this.products = products;
     }
-    
+    public long getParentNumber() {
+        if(this.parent==null) {
+            return -1L;
+        } 
+        return this.parent.id;
+    }
     
 
     
