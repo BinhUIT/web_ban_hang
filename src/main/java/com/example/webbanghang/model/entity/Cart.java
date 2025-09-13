@@ -3,6 +3,8 @@ package com.example.webbanghang.model.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +36,7 @@ public class Cart {
     public void setId(int id) {
         this.id = id;
     }
+    @JsonIgnore
     public User getUser() {
         return user;
     }

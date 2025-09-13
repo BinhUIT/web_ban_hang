@@ -76,7 +76,7 @@ public class UserController {
         }
         return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    @PostMapping("/add_to_cart") 
+    @PostMapping("/user/add_to_cart") 
     public CartItem addItemToCart(@RequestBody AddToCartRequest request, Authentication auth) {
         String email = auth.getName();
         try {
@@ -92,7 +92,7 @@ public class UserController {
         }
         return null;
     }
-    @PutMapping("/update_cart") 
+    @PutMapping("/user/update_cart") 
     public CartItem updateCartItem(@RequestBody UpdateCartRequest request, Authentication auth) {
         String email = auth.getName();
         try {
@@ -110,7 +110,7 @@ public class UserController {
         }
         return null;
     }
-    @DeleteMapping("/delete_cart_item/{id}") 
+    @DeleteMapping("/user/delete_cart_item/{id}") 
     public String deleteCartItem(@PathVariable int id, Authentication auth) {
         String email = auth.getName();
         try {
@@ -128,7 +128,7 @@ public class UserController {
         }
         return "Fail";
     }
-    @DeleteMapping("/clear_cart")
+    @DeleteMapping("/user/clear_cart")
     public String clearCart(Authentication auth) {
         String email = auth.getName();
         try {
