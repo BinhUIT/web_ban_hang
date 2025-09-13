@@ -2,7 +2,7 @@ package com.example.webbanghang.service;
 
 
 import java.util.Date;
-
+import java.util.List;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,9 +14,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanghang.middleware.Constants;
+import com.example.webbanghang.model.entity.Cart;
+import com.example.webbanghang.model.entity.CartItem;
+import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.entity.User;
+import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LoginRequest;
+import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.LoginResponse;
+import com.example.webbanghang.repository.CartItemRepository;
+import com.example.webbanghang.repository.CartRepository;
+import com.example.webbanghang.repository.ProductVariantRepository;
 import com.example.webbanghang.repository.UserRepository;
 @Service
 public class UserService implements UserDetailsService {
@@ -24,12 +32,16 @@ public class UserService implements UserDetailsService {
     
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    
-    public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager) {
+    private final CartRepository cartRepo;
+    private final ProductVariantRepository productVariantRepo;
+    private final CartItemRepository cartItemRepo;
+    public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, CartRepository cartRepo, ProductVariantRepository productVariantRepo, CartItemRepository cartItemRepo) {
         this.userRepo= userRepo;
-        
+        this.cartRepo= cartRepo;
         this.jwtService= jwtService;
         this.authenticationManager= authenticationManager;
+        this.productVariantRepo= productVariantRepo;
+        this.cartItemRepo = cartItemRepo;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -50,6 +62,83 @@ public class UserService implements UserDetailsService {
             return null;
         }
         return null;
+    }
+    public CartItem addToCart(AddToCartRequest request, String email) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        Cart cart= user.getCart();
+        if(cart==null) {
+            Cart newCart = new Cart();
+            newCart.setUser(user); 
+            newCart.setCreateAt(new Date()); 
+            newCart.setAmount(0);
+            cart=newCart;
+            cartRepo.save(newCart);
+        }
+        else {
+            for(CartItem cItem: cart.getCartItems()) {
+                if(cItem.getProductVariant().getId()==request.getProductVariantId()) {
+                    throw new Exception("400");
+                }
+            }
+        }
+        cart.setAmount(cart.getAmount()+1);
+        CartItem newCartItem = new CartItem();
+        newCartItem.setCart(cart); 
+        ProductVariant productVariant = productVariantRepo.findById(request.getProductVariantId()).orElse(null);
+        if(productVariant==null) {
+            throw new Exception("404");
+        }
+        newCartItem.setProductVariant(productVariant); 
+        newCartItem.setAmount(request.getAmount());
+
+        cartRepo.save(cart);
+        cartItemRepo.save(newCartItem);
+        return newCartItem;
+
+    }
+    public CartItem updateCart(UpdateCartRequest request, String email) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        if(user.getCart()==null) {
+            throw new Exception("401");
+        }
+        CartItem cartItem = cartItemRepo.findById(request.getCartItemId()).orElse(null);
+        if(cartItem==null) {
+            throw new Exception("404");
+        }
+        if(cartItem.getCart().getId()!=user.getCart().getId()) {
+            throw new Exception("401");
+        }
+        cartItem.setAmount(request.getNewAmount());
+        cartItemRepo.save(cartItem);
+        return cartItem;
+    } 
+    public void deleteCartItem(int cartItemId, String email) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        if(user.getCart()==null) {
+            throw new Exception("401");
+        }
+        CartItem cartItem = cartItemRepo.findById(cartItemId).orElse(null);
+        if(cartItem==null) {
+            throw new Exception("404");
+        }
+        if(cartItem.getCart().getId()!=user.getCart().getId()) {
+            throw new Exception("401");
+        }
+        Cart cart = user.getCart();
+        cart.setAmount(cart.getAmount()-1);
+        cartRepo.save(cart);
+        cartItemRepo.delete(cartItem); 
+    }
+    public void clearCart(String email) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        if(user.getCart()==null) {
+            throw new Exception("401");
+        }
+        List<CartItem> listCartItem = user.getCart().getCartItems();
+        Cart cart = user.getCart();
+        cart.setAmount(0);
+        cartRepo.save(cart);
+        cartItemRepo.deleteAll(listCartItem);
     }
     
 

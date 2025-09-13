@@ -4,15 +4,21 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.example.webbanghang.model.entity.CartItem;
+import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
+import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.service.OAuth2Service;
 import com.example.webbanghang.service.UserService;
@@ -70,6 +76,72 @@ public class UserController {
         }
         return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
+    @PostMapping("/add_to_cart") 
+    public CartItem addItemToCart(@RequestBody AddToCartRequest request, Authentication auth) {
+        String email = auth.getName();
+        try {
+            return userService.addToCart(request, email);
+        } catch (Exception e) {
+            String message = e.getMessage();
+            if(message.equals("404")) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Variant not found");
+            }
+            if(message.equals("400")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Bad request");
+            }
+        }
+        return null;
+    }
+    @PutMapping("/update_cart") 
+    public CartItem updateCartItem(@RequestBody UpdateCartRequest request, Authentication auth) {
+        String email = auth.getName();
+        try {
+            return userService.updateCart(request, email);
+        }
+        catch (Exception e) {
+            String message = e.getMessage();
+            if(message.equals("404")) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Variant not found");
+        
+            }
+            if(message.equals("401")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No permission");
+            }
+        }
+        return null;
+    }
+    @DeleteMapping("/delete_cart_item/{id}") 
+    public String deleteCartItem(@PathVariable int id, Authentication auth) {
+        String email = auth.getName();
+        try {
+            userService.deleteCartItem(id, email); 
+            return "Success";
+        } catch (Exception e) {
+            String message = e.getMessage();
+            if(message.equals("404")) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart item not found");
+        
+            }
+            if(message.equals("401")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No permission");
+            }
+        }
+        return "Fail";
+    }
+    @DeleteMapping("/clear_cart")
+    public String clearCart(Authentication auth) {
+        String email = auth.getName();
+        try {
+            userService.clearCart(email);
+            return "Success";
+        } catch (Exception e) {
+            String message = e.getMessage();
+            if(message.equals("401")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No permission");
+        
+            }
+        }
+        return "Fail";
+    }
 
 }

@@ -3,6 +3,7 @@ package com.example.webbanghang.model.entity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -39,8 +40,21 @@ public class Product {
     @OneToMany(mappedBy = "product") 
     private List<ProductVariant> productVariants;
     @JsonIgnore
+    @OneToMany(mappedBy="product")
+    private List<TagProducts> tagProducts;
+    @JsonIgnore
     public Category getCategory() {
         return category;
+    }
+    @JsonIgnore
+    public List<TagProducts> getTagProducts() {
+        return this.tagProducts;
+    } 
+    public void setTagProducts(List<TagProducts> tagProducts) {
+        this.tagProducts= tagProducts;
+    } 
+    public List<String> getTags() {
+        return this.tagProducts.stream().map(item->item.getTag().getName()).collect(Collectors.toList());
     }
     public List<ProductVariant> getProductVariants() {
         return productVariants;
@@ -136,7 +150,7 @@ public class Product {
     }
     public Product(int id, Category category, String name, String shortDesc, String detailDesc, Date create_at,
             Date update_at, float rating, int minPrice, int maxPrice, long quantity, long sold, boolean isEnable,
-            String image, List<ProductVariant> productVariants) {
+            String image, List<ProductVariant> productVariants, List<TagProducts> tagProducts) {
         this.id = id;
         this.category = category;
         this.name = name;
@@ -152,6 +166,7 @@ public class Product {
         this.isEnable = isEnable;
         this.image = image;
         this.productVariants = productVariants;
+        this.tagProducts= tagProducts;
     }
     public String getImage() {
         return image;
