@@ -1,5 +1,6 @@
 package com.example.webbanghang.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.webbanghang.model.entity.Cart;
 import com.example.webbanghang.model.entity.CartItem;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LinkAccountRequest;
@@ -110,6 +112,24 @@ public class UserController {
         }
         return null;
     }
+    @PutMapping("/user/update_many_cart_item") 
+    public List<CartItem> updateManyCartItem(@RequestBody List<UpdateCartRequest> requests, Authentication auth) {
+        String email = auth.getName();
+        try {
+            return userService.updateAllCartItem(requests, email);
+        }
+        catch (Exception e) {
+            String message = e.getMessage();
+            if(message.equals("404")) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Variant not found");
+        
+            }
+            if(message.equals("401")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No permission");
+            }
+        }
+        return null;
+    }
     @DeleteMapping("/user/delete_cart_item/{id}") 
     public String deleteCartItem(@PathVariable int id, Authentication auth) {
         String email = auth.getName();
@@ -142,6 +162,11 @@ public class UserController {
             }
         }
         return "Fail";
+    }
+    @GetMapping("/user/cart") 
+    public Cart getUserCart(Authentication auth) {
+        String email= auth.getName();
+        return userService.getUserCart(email);
     }
 
 }

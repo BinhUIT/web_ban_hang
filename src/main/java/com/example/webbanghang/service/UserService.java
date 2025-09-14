@@ -1,6 +1,7 @@
 package com.example.webbanghang.service;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -96,11 +97,7 @@ public class UserService implements UserDetailsService {
         return newCartItem;
 
     }
-    public CartItem updateCart(UpdateCartRequest request, String email) throws Exception {
-        User user = (User) this.loadUserByUsername(email);
-        if(user.getCart()==null) {
-            throw new Exception("401");
-        }
+    private CartItem validateUpdateRequest(UpdateCartRequest request, User user) throws Exception {
         CartItem cartItem = cartItemRepo.findById(request.getCartItemId()).orElse(null);
         if(cartItem==null) {
             throw new Exception("404");
@@ -108,6 +105,14 @@ public class UserService implements UserDetailsService {
         if(cartItem.getCart().getId()!=user.getCart().getId()) {
             throw new Exception("401");
         }
+        return cartItem;
+    }
+    public CartItem updateCart(UpdateCartRequest request, String email) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        if(user.getCart()==null) {
+            throw new Exception("401");
+        }
+        CartItem cartItem = validateUpdateRequest(request, user);
         cartItem.setAmount(request.getNewAmount());
         cartItemRepo.save(cartItem);
         return cartItem;
@@ -140,6 +145,23 @@ public class UserService implements UserDetailsService {
         cartRepo.save(cart);
         cartItemRepo.deleteAll(listCartItem);
     }
-    
+    public Cart getUserCart(String email) {
+        User user = (User) this.loadUserByUsername(email);
+        return user.getCart();
+    }
+    public List<CartItem> updateAllCartItem(List<UpdateCartRequest> requests, String email) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        if(user.getCart()==null) {
+            throw new Exception("401");
+        }
+        List<CartItem> listCartItem = new ArrayList<>();
+        for(UpdateCartRequest request:requests) {
+            CartItem cartItem = validateUpdateRequest(request, user);
+            cartItem.setAmount(request.getNewAmount());
+            listCartItem.add(cartItem);
+        }
+        cartItemRepo.saveAll(listCartItem);
+        return listCartItem;
+    }
 
 }

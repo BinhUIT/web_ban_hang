@@ -105,7 +105,9 @@ public class ProductVariant {
     public Product getProduct() {
         return product;
     }
-
+    public int getProductId() {
+        return this.product.getId();
+    }
     public void setProduct(Product product) {
         this.product = product;
     }
