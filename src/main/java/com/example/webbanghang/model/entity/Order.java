@@ -28,10 +28,13 @@ public class Order {
     private EOrderStatus status;
     private float shipping_fee;
     private float total;
+    private String email;
+    private String address;
+    private String phone;
     @OneToMany(mappedBy = "order") 
     private List<OrderItem> orderItems;
     public Order(int id, User user, Date createAt, Date updateAt, EOrderStatus status, float shipping_fee, float total,
-            List<OrderItem> orderItems) {
+            List<OrderItem> orderItems,String email, String address, String phone) {
         this.id = id;
         this.user = user;
         this.createAt = createAt;
@@ -40,6 +43,17 @@ public class Order {
         this.shipping_fee = shipping_fee;
         this.total = total;
         this.orderItems = orderItems;
+        this.email= email;
+        this.address = address;
+        this.phone= phone;
+    }
+    public Order(User user, String email, String address, String phone) {
+        this.user = user;
+        this.createAt = new Date();
+        this.email= (email==null)?user.getEmail():email;
+        this.address = (address==null)?user.getAddress():address;
+        this.phone = (phone==null)?user.getPhone():phone;
+        this.status= EOrderStatus.PENDING;
     }
     public List<OrderItem> getOrderItems() {
         return orderItems;
@@ -91,6 +105,30 @@ public class Order {
     }
     public Order() {
     } 
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
     
 
 }

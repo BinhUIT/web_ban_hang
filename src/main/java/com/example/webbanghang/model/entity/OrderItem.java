@@ -34,6 +34,12 @@ public class OrderItem {
     }
     public OrderItem() {
     }
+    public OrderItem(CartItem cartItem, Order order) {
+        this.productVariant = cartItem.getProductVariant();
+        this.order = order;
+        this.amount = cartItem.getAmount();
+        this.totalPrice = this.amount*this.productVariant.getPrice();
+    }
     public int getId() {
         return id;
     }

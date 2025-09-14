@@ -17,9 +17,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.webbanghang.model.entity.Cart;
 import com.example.webbanghang.model.entity.CartItem;
+import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
+import com.example.webbanghang.model.request.OrderSubInfo;
 import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.service.OAuth2Service;
@@ -167,6 +169,22 @@ public class UserController {
     public Cart getUserCart(Authentication auth) {
         String email= auth.getName();
         return userService.getUserCart(email);
+    }
+    @PostMapping("/user/order") 
+    public Order order(Authentication auth, @RequestBody OrderSubInfo subInfo) {
+        String email = auth.getName();
+        try {
+            return userService.orderFromCart(email, subInfo);
+        }
+        catch (Exception e) {
+            String message = e.getMessage();
+            if(message.equals("401")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No permission");
+        
+            }
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Server error");
+        }
+        
     }
 
 }

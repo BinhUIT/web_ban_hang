@@ -17,14 +17,19 @@ import org.springframework.stereotype.Service;
 import com.example.webbanghang.middleware.Constants;
 import com.example.webbanghang.model.entity.Cart;
 import com.example.webbanghang.model.entity.CartItem;
+import com.example.webbanghang.model.entity.Order;
+import com.example.webbanghang.model.entity.OrderItem;
 import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LoginRequest;
+import com.example.webbanghang.model.request.OrderSubInfo;
 import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.repository.CartItemRepository;
 import com.example.webbanghang.repository.CartRepository;
+import com.example.webbanghang.repository.OrderItemRepository;
+import com.example.webbanghang.repository.OrderRepository;
 import com.example.webbanghang.repository.ProductVariantRepository;
 import com.example.webbanghang.repository.UserRepository;
 @Service
@@ -36,13 +41,18 @@ public class UserService implements UserDetailsService {
     private final CartRepository cartRepo;
     private final ProductVariantRepository productVariantRepo;
     private final CartItemRepository cartItemRepo;
-    public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, CartRepository cartRepo, ProductVariantRepository productVariantRepo, CartItemRepository cartItemRepo) {
+    private final OrderRepository orderRepo;
+    private final OrderItemRepository orderItemRepo;
+    public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, CartRepository cartRepo, ProductVariantRepository productVariantRepo, CartItemRepository cartItemRepo,
+    OrderRepository orderRepo, OrderItemRepository orderItemRepo) {
         this.userRepo= userRepo;
         this.cartRepo= cartRepo;
         this.jwtService= jwtService;
         this.authenticationManager= authenticationManager;
         this.productVariantRepo= productVariantRepo;
         this.cartItemRepo = cartItemRepo;
+        this.orderRepo= orderRepo;
+        this.orderItemRepo= orderItemRepo;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -162,6 +172,33 @@ public class UserService implements UserDetailsService {
         }
         cartItemRepo.saveAll(listCartItem);
         return listCartItem;
+    }
+    public Order orderFromCart(String email, OrderSubInfo subInfo) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        if(user.getCart()==null) {
+            throw new Exception("401");
+        }
+        Order order = new Order(user,subInfo.getEmail(), subInfo.getAddress(), subInfo.getPhone()); 
+        
+        float productMoney=0;
+        float shippingFee=0;
+        List<OrderItem> listOrderItem = new ArrayList<>();
+        for(CartItem cartItem :user.getCart().getCartItems()) {
+            productMoney= productMoney+cartItem.getAmount()*cartItem.getProductVariant().getPrice();
+            shippingFee=shippingFee+Constants.shippingFee;
+           listOrderItem.add(new OrderItem(cartItem, order));
+           cartItemRepo.delete(cartItem);
+        }
+        Cart cart = user.getCart();
+        user.setCart(null);
+        cart.setUser(null);
+        userRepo.save(user);
+        cartRepo.save(cart);
+        
+        orderRepo.save(order);
+        orderItemRepo.saveAll(listOrderItem);
+        return order;
+        
     }
 
 }
