@@ -5,14 +5,17 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 @SpringBootApplication
 @EnableSpringDataWebSupport(pageSerializationMode = PageSerializationMode.VIA_DTO)
 public class WebbanghangApplication {
 
 	public static void main(String[] args) {
-		
+		Dotenv dotenv= Dotenv.load();
 		SpringApplication.run(WebbanghangApplication.class, args); 
 		System.out.println(System.getenv("DATABASE_URL"));
+		System.out.println(dotenv.get("PAYOS_CLIENT_ID"));
 	}
 
 }

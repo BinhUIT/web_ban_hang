@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.webbanghang.model.enums.EOrderStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -33,8 +35,10 @@ public class Order {
     private String phone;
     @OneToMany(mappedBy = "order") 
     private List<OrderItem> orderItems;
+    @OneToOne(mappedBy="order") 
+    private Payment payment;
     public Order(int id, User user, Date createAt, Date updateAt, EOrderStatus status, float shipping_fee, float total,
-            List<OrderItem> orderItems,String email, String address, String phone) {
+            List<OrderItem> orderItems,String email, String address, String phone, Payment payment) {
         this.id = id;
         this.user = user;
         this.createAt = createAt;
@@ -46,6 +50,7 @@ public class Order {
         this.email= email;
         this.address = address;
         this.phone= phone;
+        this.payment = payment;
     }
     public Order(User user, String email, String address, String phone) {
         this.user = user;
@@ -54,6 +59,17 @@ public class Order {
         this.address = (address==null)?user.getAddress():address;
         this.phone = (phone==null)?user.getPhone():phone;
         this.status= EOrderStatus.PENDING;
+    }
+    public boolean getIsPaid() {
+        if(this.payment==null) return false;
+        return this.payment.getStatus().equals("PAID");
+    }
+    @JsonIgnore
+    public Payment getPayment() {
+        return this.payment;
+    }
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
     public List<OrderItem> getOrderItems() {
         return orderItems;

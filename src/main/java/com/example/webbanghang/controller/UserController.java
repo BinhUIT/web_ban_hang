@@ -27,6 +27,7 @@ import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.request.OrderSubInfo;
 import com.example.webbanghang.model.request.UpdateCartRequest;
+import com.example.webbanghang.model.response.CheckoutResponse;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.service.OAuth2Service;
 import com.example.webbanghang.service.UserService;
@@ -187,6 +188,25 @@ public class UserController {
         
             }
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Server error");
+        }
+        
+    }
+    @PostMapping("/user/check-out/{orderId}") 
+    public CheckoutResponse checkOut(Authentication auth, @PathVariable int orderId) {
+        String email = auth.getName();
+        try {
+            Order order = userService.getOrderById(email, orderId);
+            return null;
+        }
+        catch(Exception e) {
+            if(e.getMessage().equals("404")){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            if(e.getMessage().equals("400")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         
     }
