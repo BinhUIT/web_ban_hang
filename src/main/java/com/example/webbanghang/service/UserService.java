@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.OrderItem;
 import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.entity.User;
+import com.example.webbanghang.model.enums.EOrderStatus;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.request.OrderSubInfo;
@@ -189,16 +192,42 @@ public class UserService implements UserDetailsService {
            listOrderItem.add(new OrderItem(cartItem, order));
            cartItemRepo.delete(cartItem);
         }
-        Cart cart = user.getCart();
-        user.setCart(null);
-        cart.setUser(null);
-        userRepo.save(user);
-        cartRepo.save(cart);
-        
+       
+        order.setShipping_fee(shippingFee);
+        order.setTotal(productMoney+shippingFee);
         orderRepo.save(order);
         orderItemRepo.saveAll(listOrderItem);
         return order;
         
+    }
+    public Page<Order> getUserOrderHistory(String email, Pageable pageable) {
+        User user =(User) this.loadUserByUsername(email);
+        return orderRepo.findByUser_IdOrderByCreateAtDesc(user.getId(), pageable);
+    }
+    public Order getOrderById(String email, int id) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        Order order = orderRepo.findById(id).orElse(null);
+        if(order==null) {
+            throw new Exception("404");
+        } 
+        if(user.getId()!=order.getUser().getId()) {
+            throw new Exception("400");
+        } 
+        return order;
+    }
+    public Order cancelOrder(String email, int id) throws Exception {
+         User user = (User) this.loadUserByUsername(email);
+        Order order = orderRepo.findById(id).orElse(null);
+        if(order==null) {
+            throw new Exception("404");
+        } 
+        if(user.getId()!=order.getUser().getId()||order.getStatus()!=EOrderStatus.PENDING) {
+            throw new Exception("400");
+        } 
+        order.setStatus(EOrderStatus.CANCELED);
+        order.setUpdateAt(new Date()); 
+        orderRepo.save(order);
+        return order;
     }
 
 }

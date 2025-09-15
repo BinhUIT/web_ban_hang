@@ -3,6 +3,9 @@ package com.example.webbanghang.controller;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -186,5 +190,44 @@ public class UserController {
         }
         
     }
-
+    @GetMapping("/user/order-history") 
+    public Page<Order> getOrderHistory(Authentication auth, @RequestParam("page") int page, @RequestParam("size") int size) {
+        Pageable pageable = PageRequest.of(page,size);
+        String email= auth.getName();
+        return userService.getUserOrderHistory(email, pageable);
+    }
+    @GetMapping("/user/order-by-id/{id}") 
+    public Order getOrderById(Authentication auth, @PathVariable int id) {
+        String email = auth.getName();
+        try {
+            return userService.getOrderById(email, id);
+        }
+        catch(Exception e) {
+            if(e.getMessage().equals("404")){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            if(e.getMessage().equals("400")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PutMapping("/user/cancel-order/{id}") 
+    public Order cancelOrder(Authentication auth, @PathVariable int id) {
+        String email = auth.getName();
+        try {
+            return userService.cancelOrder(email, id);
+        }
+        catch(Exception e) {
+            if(e.getMessage().equals("404")){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            if(e.getMessage().equals("400")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
