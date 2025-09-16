@@ -38,9 +38,9 @@ public class Order {
     private List<OrderItem> orderItems;
     @OneToOne(mappedBy="order") 
     private Payment payment;
-    
+    private Long paymentCode;
     public Order(int id, User user, Date createAt, Date updateAt, EOrderStatus status, float shipping_fee, float total,
-            List<OrderItem> orderItems,String email, String address, String phone, Payment payment) {
+            List<OrderItem> orderItems,String email, String address, String phone, Payment payment, Long paymentCode) {
         this.id = id;
         this.user = user;
         this.createAt = createAt;
@@ -53,7 +53,9 @@ public class Order {
         this.address = address;
         this.phone= phone;
         this.payment = payment;
+        this.paymentCode = paymentCode;
     }
+    
     public Order(User user, String email, String address, String phone) {
         this.user = user;
         this.createAt = new Date();
@@ -152,6 +154,14 @@ public class Order {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public Long getPaymentCode() {
+        return paymentCode;
+    }
+
+    public void setPaymentCode(Long paymentCode) {
+        this.paymentCode = paymentCode;
     }
     
 

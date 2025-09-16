@@ -59,7 +59,10 @@ public class PaymentService {
         for(OrderItem item : order.getOrderItems()) {
             items.add(ItemData.builder().name(item.getProductVariant().getName()).quantity(item.getAmount()).price((int)item.getProductVariant().getPrice()).build());
         }
-        PaymentData paymentData = PaymentData.builder().orderCode((long)order.getId()).amount((int)order.getTotal()).items(items).returnUrl("http://localhost:8080/unsecure/check_out_success").cancelUrl("http://localhost:8080/unsecure/check_out_cancel").description("Checkout "+order.getId()).build();
+        long currentTimeMillis= System.currentTimeMillis();
+        PaymentData paymentData = PaymentData.builder().orderCode(currentTimeMillis).amount((int)order.getTotal()).items(items).returnUrl("http://localhost:8080/unsecure/check_out_success").cancelUrl("http://localhost:8080/unsecure/check_out_cancel").description("Checkout "+order.getId()).build();
+        order.setPaymentCode(currentTimeMillis);
+        orderRepo.save(order);
         CheckoutResponseData responseData= payOS.createPaymentLink(paymentData);
         return responseData.getCheckoutUrl();
     }
@@ -121,9 +124,9 @@ public class PaymentService {
             }
             return false;
         }
-    public boolean updateDBWhenCheckoutSuccess(int orderId, String currency, String status) throws Exception {
+    public boolean updateDBWhenCheckoutSuccess(long paymentCode, String currency, String status) throws Exception {
         
-        Order order = orderRepo.findById(orderId).orElse(null);
+        Order order = orderRepo.findFirstByPaymentCode(paymentCode);
         if(order==null) {
             return false;
         }

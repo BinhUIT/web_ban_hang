@@ -66,9 +66,9 @@ public class PaymentController {
             String statusCode = data.getString("code");
             if(statusCode.equals("00")) {
                 
-            int orderCode = rawDataObject.getInt("orderCode");
+            long paymentCode = data.getLong("orderCode");
             String currency = data.getString("currency");
-            paymentService.updateDBWhenCheckoutSuccess(orderCode, currency, "Success");
+            paymentService.updateDBWhenCheckoutSuccess(paymentCode, currency, "Success");
             }
             System.out.println(rawData);
             return ResponseEntity.ok("Webhook processed successfully");
