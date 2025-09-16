@@ -11,12 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.webbanghang.model.entity.Payment;
 import com.example.webbanghang.service.PaymentService;
-
-import io.github.cdimascio.dotenv.Dotenv;
-
-import vn.payos.type.WebhookData;
 
 
 @RestController
@@ -55,26 +50,35 @@ public class PaymentController {
 
        
         json.remove("signature");
-        String rawData = json.toString();
+        JSONObject rawDataObject = json.getJSONObject("data");
+        
+        String accountNumber = rawDataObject.getString("accountNumber");
+        String rawData = rawDataObject.toString();
 
         
-        boolean isValid = paymentService.validateCheckSum(rawData, signature);
-
+        boolean isValid = paymentService.isValidData(rawData, signature);
+        if(isValid&&accountNumber.equals("12345678")) {
+            return ResponseEntity.ok("Webhook processed successfully");
+        }
         if (isValid) {
             
            JSONObject data= json.getJSONObject("data"); 
             String statusCode = data.getString("code");
             if(statusCode.equals("00")) {
                 
-            int orderCode = (int) data.getLong("orderCode");
+            int orderCode = rawDataObject.getInt("orderCode");
             String currency = data.getString("currency");
             paymentService.updateDBWhenCheckoutSuccess(orderCode, currency, "Success");
             }
+            System.out.println(rawData);
             return ResponseEntity.ok("Webhook processed successfully");
         } else {
+            System.out.println(rawBody);
+            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
         }
     } catch (Exception e) {
+        e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error");
     }
     }

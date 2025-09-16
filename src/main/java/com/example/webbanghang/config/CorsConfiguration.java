@@ -9,10 +9,10 @@ public class CorsConfiguration implements WebMvcConfigurer {
      @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Apply to all paths
-                .allowedOrigins("http://localhost:5173")
+                .allowedOrigins("http://localhost:5173","https://api-merchant.payos.vn")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
                 .allowedHeaders("*") // Allowed headers
                 .allowCredentials(true) // Allow credentials (e.g., cookies, authorization headers)
-                .maxAge(3600); // Max age of the CORS preflight request
+                .maxAge(3600); 
     }
 }

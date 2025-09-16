@@ -2,11 +2,16 @@ package com.example.webbanghang.service;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.codec.digest.HmacUtils;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.example.webbanghang.model.entity.Order;
@@ -80,6 +85,41 @@ public class PaymentService {
         }
 
     }
+    private Iterator<String> sortedIterator(Iterator<?> it, Comparator<String> comparator) {
+            List<String> list = new ArrayList<String>();
+            while (it.hasNext()) {
+                list.add((String) it.next());
+            }
+
+            Collections.sort(list, comparator);
+            return list.iterator();
+    } 
+    public boolean isValidData(String transaction, String transactionSignature) {
+        Dotenv dotenv = Dotenv.load();
+        String checkSumKey = dotenv.get("PAYOS_CHECKSUM_KEY");
+            try {
+                JSONObject jsonObject = new JSONObject(transaction);
+                Iterator<String> sortedIt = sortedIterator(jsonObject.keys(), (a, b) -> a.compareTo(b));
+
+                StringBuilder transactionStr = new StringBuilder();
+                while (sortedIt.hasNext()) {
+                    String key = sortedIt.next();
+                    String value = jsonObject.get(key).toString();
+                    transactionStr.append(key);
+                    transactionStr.append('=');
+                    transactionStr.append(value);
+                    if (sortedIt.hasNext()) {
+                        transactionStr.append('&');
+                    }
+                }
+
+                String signature = new HmacUtils("HmacSHA256", checkSumKey).hmacHex(transactionStr.toString());
+                return signature.equals(transactionSignature);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
     public boolean updateDBWhenCheckoutSuccess(int orderId, String currency, String status) throws Exception {
         
         Order order = orderRepo.findById(orderId).orElse(null);
