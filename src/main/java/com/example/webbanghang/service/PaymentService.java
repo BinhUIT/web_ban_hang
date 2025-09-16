@@ -18,6 +18,7 @@ import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.OrderItem;
 import com.example.webbanghang.model.entity.Payment;
 import com.example.webbanghang.model.entity.User;
+import com.example.webbanghang.model.enums.EPaymentType;
 import com.example.webbanghang.repository.OrderRepository;
 import com.example.webbanghang.repository.PaymentRepository;
 
@@ -126,7 +127,7 @@ public class PaymentService {
         if(order==null) {
             return false;
         }
-        paymentRepo.save(new Payment(order, currency,status));
+        paymentRepo.save(new Payment(order, currency,status,EPaymentType.ONLINE));
         return true;
         
     }

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.webbanghang.model.enums.EOrderStatus;
+import com.example.webbanghang.model.enums.EPaymentType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
@@ -37,6 +38,7 @@ public class Order {
     private List<OrderItem> orderItems;
     @OneToOne(mappedBy="order") 
     private Payment payment;
+    
     public Order(int id, User user, Date createAt, Date updateAt, EOrderStatus status, float shipping_fee, float total,
             List<OrderItem> orderItems,String email, String address, String phone, Payment payment) {
         this.id = id;
@@ -62,11 +64,17 @@ public class Order {
     }
     public boolean getIsPaid() {
         if(this.payment==null) return false;
-        return this.payment.getStatus().equals("PAID");
+        return this.payment.getStatus().equals("Success");
     }
     @JsonIgnore
     public Payment getPayment() {
         return this.payment;
+    }
+    public EPaymentType getPaymentType() {
+        if(this.payment==null) {
+            return null;
+        }
+        return this.payment.getPaymentType();
     }
     public void setPayment(Payment payment) {
         this.payment = payment;

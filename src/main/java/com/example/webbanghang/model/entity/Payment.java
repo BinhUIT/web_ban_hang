@@ -2,6 +2,8 @@ package com.example.webbanghang.model.entity;
 
 import java.util.Date;
 
+import com.example.webbanghang.model.enums.EPaymentType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +27,7 @@ public class Payment  {
     private Date createAt;
     private Date updateAt;
     private String status;
+    private EPaymentType paymentType;
     public int getId() {
         return id;
     }
@@ -69,7 +72,7 @@ public class Payment  {
     }
     public Payment() {
     }
-    public Payment(int id, Order order, String currency, float total, Date createAt, Date updateAt, String status) {
+    public Payment(int id, Order order, String currency, float total, Date createAt, Date updateAt, String status, EPaymentType paymentType) {
         this.id = id;
         this.order = order;
         this.currency = currency;
@@ -77,14 +80,22 @@ public class Payment  {
         this.createAt = createAt;
         this.updateAt = updateAt;
         this.status = status;
+        this.paymentType=paymentType;
     }
-    public Payment(Order order, String currency, String status) {
+    public Payment(Order order, String currency, String status, EPaymentType paymentType) {
         this.order= order;
         this.currency = currency;
         this.total= order.getTotal();
         this.createAt= new Date();
         this.updateAt=null;
         this.status=status;
+        this.paymentType = paymentType;
+    }
+    public EPaymentType getPaymentType() {
+        return paymentType;
+    }
+    public void setPaymentType(EPaymentType paymentType) {
+        this.paymentType = paymentType;
     }
 
 }

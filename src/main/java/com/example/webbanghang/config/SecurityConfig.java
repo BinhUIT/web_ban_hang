@@ -43,6 +43,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth->auth.requestMatchers("/unsecure/**").permitAll()
         .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN") 
         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
+        .requestMatchers("/shipper/**").hasAnyAuthority("SHIPPER")
         .anyRequest().authenticated()
         )
         .formLogin(Customizer.withDefaults());
