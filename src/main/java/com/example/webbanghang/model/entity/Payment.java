@@ -78,6 +78,13 @@ public class Payment  {
         this.updateAt = updateAt;
         this.status = status;
     }
-    
+    public Payment(Order order, String currency, String status) {
+        this.order= order;
+        this.currency = currency;
+        this.total= order.getTotal();
+        this.createAt= new Date();
+        this.updateAt=null;
+        this.status=status;
+    }
 
 }
