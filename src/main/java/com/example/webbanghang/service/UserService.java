@@ -181,7 +181,7 @@ public class UserService implements UserDetailsService {
         if(user.getCart()==null) {
             throw new Exception("401");
         }
-        Order order = new Order(user,subInfo.getEmail(), subInfo.getAddress(), subInfo.getPhone()); 
+        Order order = new Order(user, subInfo.getAddress(), subInfo.getPhone()); 
         
         float productMoney=0;
         float shippingFee=0;

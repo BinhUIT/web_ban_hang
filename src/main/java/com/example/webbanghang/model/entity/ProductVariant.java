@@ -2,15 +2,18 @@ package com.example.webbanghang.model.entity;
 
 import java.util.Date;
 
+import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EEntitySatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -36,6 +39,14 @@ public class ProductVariant {
     private Date createAt;
     private Date updateAt;
     private EEntitySatus status;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String code;
+    @PrePersist
+    public void generateCode() {
+        if(this.code ==null) {
+            this.code = UUIDGenerator.getRanDomUUID();
+        }
+    }
     public ProductVariant() {
     }
 
@@ -78,7 +89,7 @@ public class ProductVariant {
 
 
     public ProductVariant(int id, Product product, ProductColor productColor, ProductSize productSize, float price,
-            long quantity, String image, String name, Date createAt, Date updateAt, EEntitySatus status) {
+            long quantity, String image, String name, Date createAt, Date updateAt, EEntitySatus status, String code) {
         this.id = id;
         this.product = product;
         this.productColor = productColor;
@@ -90,6 +101,7 @@ public class ProductVariant {
         this.createAt = createAt;
         this.updateAt = updateAt;
         this.status = status;
+        this.code = code;
     }
 
 
@@ -158,6 +170,12 @@ public class ProductVariant {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public String getCode() {
+        return code;
+    }
+    public void setCode(String code) {
+        this.code = code;
     }
     
     

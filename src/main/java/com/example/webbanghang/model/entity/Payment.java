@@ -2,15 +2,18 @@ package com.example.webbanghang.model.entity;
 
 import java.util.Date;
 
+import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EPaymentType;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -28,6 +31,14 @@ public class Payment  {
     private Date updateAt;
     private String status;
     private EPaymentType paymentType;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String code;
+    @PrePersist
+    public void generateCode() {
+        if(this.code ==null) {
+            this.code = UUIDGenerator.getRanDomUUID();
+        }
+    }
     public int getId() {
         return id;
     }
@@ -36,6 +47,12 @@ public class Payment  {
     }
     public Order getOrder() {
         return order;
+    }
+    public String getCode() {
+        return code;
+    }
+    public void setCode(String code) {
+        this.code = code;
     }
     public void setOrder(Order order) {
         this.order = order;
@@ -72,7 +89,7 @@ public class Payment  {
     }
     public Payment() {
     }
-    public Payment(int id, Order order, String currency, float total, Date createAt, Date updateAt, String status, EPaymentType paymentType) {
+    public Payment(int id, Order order, String currency, float total, Date createAt, Date updateAt, String status, EPaymentType paymentType, String code ) {
         this.id = id;
         this.order = order;
         this.currency = currency;
@@ -81,6 +98,7 @@ public class Payment  {
         this.updateAt = updateAt;
         this.status = status;
         this.paymentType=paymentType;
+        this.code = code;
     }
     public Payment(Order order, String currency, String status, EPaymentType paymentType) {
         this.order= order;

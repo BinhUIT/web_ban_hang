@@ -3,10 +3,12 @@ package com.example.webbanghang.model.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EOrderStatus;
 import com.example.webbanghang.model.enums.EPaymentType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -39,8 +42,22 @@ public class Order {
     @OneToOne(mappedBy="order") 
     private Payment payment;
     private Long paymentCode;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String code;
+    @PrePersist
+    public void generateCode() {
+        if(this.code==null) {
+            this.code = UUIDGenerator.getRanDomUUID();
+        }
+    }
+    public String getCode() {
+        return code;
+    }
+    public void setCode(String code) {
+        this.code = code;
+    }
     public Order(int id, User user, Date createAt, Date updateAt, EOrderStatus status, float shipping_fee, float total,
-            List<OrderItem> orderItems,String email, String address, String phone, Payment payment, Long paymentCode) {
+            List<OrderItem> orderItems,String email, String address, String phone, Payment payment, Long paymentCode, String code) {
         this.id = id;
         this.user = user;
         this.createAt = createAt;
@@ -54,12 +71,13 @@ public class Order {
         this.phone= phone;
         this.payment = payment;
         this.paymentCode = paymentCode;
+        this.code = code;
     }
     
-    public Order(User user, String email, String address, String phone) {
+    public Order(User user, String address, String phone) {
         this.user = user;
         this.createAt = new Date();
-        this.email= (email==null)?user.getEmail():email;
+        this.email= user.getEmail();
         this.address = (address==null)?user.getAddress():address;
         this.phone = (phone==null)?user.getPhone():phone;
         this.status= EOrderStatus.PENDING;

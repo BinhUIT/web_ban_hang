@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.webbanghang.middleware.UUIDGenerator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -42,6 +45,16 @@ public class Product {
     @JsonIgnore
     @OneToMany(mappedBy="product")
     private List<TagProducts> tagProducts;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String code;
+    @PrePersist
+    public void generateCode() {
+        if(this.code ==null) {
+            this.code = UUIDGenerator.getRanDomUUID();
+
+        }
+    }
+    
     @JsonIgnore
     public Category getCategory() {
         return category;
@@ -107,6 +120,8 @@ public class Product {
     public float getMinPrice() {
         return minPrice;
     }
+   
+    
     public void setMinPrice(int minPrice) {
         this.minPrice = minPrice;
     }
@@ -150,7 +165,7 @@ public class Product {
     }
     public Product(int id, Category category, String name, String shortDesc, String detailDesc, Date create_at,
             Date update_at, float rating, int minPrice, int maxPrice, long quantity, long sold, boolean isEnable,
-            String image, List<ProductVariant> productVariants, List<TagProducts> tagProducts) {
+            String image, List<ProductVariant> productVariants, List<TagProducts> tagProducts, String code) {
         this.id = id;
         this.category = category;
         this.name = name;
@@ -167,13 +182,25 @@ public class Product {
         this.image = image;
         this.productVariants = productVariants;
         this.tagProducts= tagProducts;
+        this.code = code;
     }
+    
     public String getImage() {
         return image;
     }
     public void setImage(String image) {
         this.image = image;
     }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+   
+    
     
     
     
