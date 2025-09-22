@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Product;
 import com.example.webbanghang.model.request.CreateCouponRequest;
+import com.example.webbanghang.model.response.CheckCouponResponse;
 import com.example.webbanghang.repository.CouponRepository;
 import com.example.webbanghang.repository.ProductRepository;
 
@@ -42,12 +43,12 @@ public class CouponService {
             throw new Exception("500");
         }
     }
-    public boolean checkCoupon(String couponCode, float price) {
+    public CheckCouponResponse checkCoupon(String couponCode, float price) {
         Coupon coupon = couponRepo.findFirstByCode(couponCode);
-        if(coupon==null) return false;
-        if(!coupon.getIsUsable()) return false;
-        if(coupon.getMinOrderValue()>price) return false;
+        if(coupon==null) return new CheckCouponResponse("Can not use",coupon);
+        if(!coupon.getIsUsable()) return new CheckCouponResponse("Can not use",coupon);
+        if(coupon.getMinOrderValue()>price) return new CheckCouponResponse("Need buy "+(int)(coupon.getMinOrderValue()-price)+" đ more to use",coupon);
         
-        return true;
+        return new CheckCouponResponse("You can use this coupon",coupon);
     }
 }

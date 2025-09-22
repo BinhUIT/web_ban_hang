@@ -265,6 +265,11 @@ public class UserService implements UserDetailsService {
             System.out.println(order.getOriginPrice());
             throw new Exception("Need buy more");
         }
+        return applyCoupon(order, coupon);
+    }
+    public Order applyCoupon(Order order, Coupon coupon) {
+        coupon.setUsedTime(coupon.getUsedTime()+1); 
+        couponRepo.save(coupon);
         order.setCoupon(coupon); 
         orderRepo.save(order);
         return order;
