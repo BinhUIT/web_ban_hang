@@ -178,7 +178,9 @@ public class ProductVariant {
         this.code = code;
     }
     
-    
+    public float getRealPrice() {
+        return 0f;
+    }
    
     
 }

@@ -4,19 +4,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Order;
+import com.example.webbanghang.model.request.CreateCouponRequest;
 import com.example.webbanghang.service.AdminService;
+import com.example.webbanghang.service.CouponService;
 
 @RestController
 public class AdminController {
     private final AdminService adminService;
-    public AdminController(AdminService adminService) {
+    private final CouponService couponService;
+    public AdminController(AdminService adminService, CouponService couponService) {
         this.adminService= adminService;
+        this.couponService = couponService;
     } 
     @GetMapping("/admin/get_orders") 
     public Page<Order> getOrders(@RequestParam("size") int size, @RequestParam("page") int page) {
@@ -72,4 +79,19 @@ public class AdminController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }    
+    @PostMapping("/admin/create_coupon") 
+    public Coupon createCoupon(@RequestBody CreateCouponRequest request) {
+        try {
+            return couponService.createCoupon(request);
+        } catch (Exception e) {
+            if(e.getMessage().equals("404")) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            } 
+            if(e.getMessage().equals("400")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
