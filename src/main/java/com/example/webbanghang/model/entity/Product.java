@@ -47,9 +47,7 @@ public class Product {
     private List<TagProducts> tagProducts;
     @Column(nullable = false, unique = true, updatable = false)
     private String code;
-    @JsonIgnore
-    @OneToMany(mappedBy="product")
-    private List<Coupon> coupons;
+   
     @PrePersist
     public void generateCode() {
         if(this.code ==null) {

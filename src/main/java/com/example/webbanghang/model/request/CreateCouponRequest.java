@@ -14,16 +14,16 @@ public class CreateCouponRequest {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX")
     private Date endAt;
     private int limit;
-    
+    private float minOrderValue;
 
-    public CreateCouponRequest(float discount, EDiscountType discountType, Date endAt, int limit, int productId, Date startAt) {
+    public CreateCouponRequest(float discount, EDiscountType discountType, Date endAt, int limit, int productId, Date startAt,float minOrderValue ) {
         this.discount = discount;
         this.discountType = discountType;
         this.endAt = endAt;
         this.limit = limit;
         this.productId = productId;
         this.startAt = startAt;
-        
+        this.minOrderValue = minOrderValue;
     }
 
     public CreateCouponRequest() {
@@ -55,6 +55,14 @@ public class CreateCouponRequest {
 
     public Date getStartAt() {
         return startAt;
+    }
+
+    public float getMinOrderValue() {
+        return minOrderValue;
+    }
+
+    public void setMinOrderValue(float minOrderValue) {
+        this.minOrderValue = minOrderValue;
     }
 
     public void setStartAt(Date startAt) {

@@ -120,10 +120,11 @@ public class ProductController {
            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     } 
-    @GetMapping("/unsecure/get_enable_coupon/{productId}") 
-    public List<Coupon> getAllEnableCoupons(@PathVariable int productId) {
+    @GetMapping("/unsecure/get_enable_coupon") 
+    public List<Coupon> getAllEnableCoupons() {
         
-        return couponService.getAllUsableCouponOfProduct(productId);
+        return couponService.getAllUsableCoupon();
     }
+    
     
 }

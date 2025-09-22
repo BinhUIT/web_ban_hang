@@ -11,8 +11,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
@@ -23,9 +21,8 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private int id;
     private EDiscountType discountType;
-    @ManyToOne
-    @JoinColumn(name="product_id") 
-    private Product product;
+    private float minOrderValue;
+    
     private float discount;
     private Date createAt;
     private Date updateAt;
@@ -75,12 +72,7 @@ public class Coupon {
     public void setDiscountType(EDiscountType discountType) {
         this.discountType = discountType;
     }
-    public Product getProduct() {
-        return product;
-    }
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+    
     public float getDiscount() {
         return discount;
     }
@@ -114,10 +106,10 @@ public class Coupon {
     public Coupon() {
     }
     public Coupon(int id, EDiscountType discountType, Product product, float discount, Date createAt, Date updateAt,
-            Date startAt, Date endAt, String code, int limit, int usedTime) {
+            Date startAt, Date endAt, String code, int limit, int usedTime, float minOrderValue) {
         this.id = id;
         this.discountType = discountType;
-        this.product = product;
+        this.minOrderValue = minOrderValue;
         this.discount = discount;
         this.createAt = createAt;
         this.updateAt = updateAt;
@@ -127,6 +119,7 @@ public class Coupon {
         this.limit = limit;
         this.usedTime = usedTime;
     }
+    
     public boolean getIsUsable() {
         if(this.startAt.after(new Date())) {
             return false;
@@ -148,13 +141,13 @@ public class Coupon {
     public void setCode(String code) {
         this.code = code;
     }
-    public Coupon(CreateCouponRequest request, Product product) throws Exception {
+    public Coupon(CreateCouponRequest request) throws Exception {
         if(request.getStartAt().after(request.getEndAt())) {
             throw new Exception("400");
         }
         this.discountType= request.getDiscountType();
         this.createAt= new Date();
-        this.product = product;
+        
         this.discount = request.getDiscount();
         this.updateAt= null;
         this.startAt = request.getStartAt();
@@ -162,6 +155,12 @@ public class Coupon {
         this.limit = request.getLimit();
         this.usedTime= 0;
 
+    }
+    public float getMinOrderValue() {
+        return minOrderValue;
+    }
+    public void setMinOrderValue(float minOrderValue) {
+        this.minOrderValue = minOrderValue;
     }
     
 }

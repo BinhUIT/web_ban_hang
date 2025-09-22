@@ -19,8 +19,8 @@ public class CouponService {
         this.couponRepo = couponRepo;
         this.productRepo= productRepo;
     }
-    public List<Coupon> getAllUsableCouponOfProduct(int productId) {
-        List<Coupon> listCouponOfProduct = couponRepo.findByProduct_Id(productId);
+    public List<Coupon> getAllUsableCoupon() {
+        List<Coupon> listCouponOfProduct = couponRepo.findAll();
         List<Coupon> result = listCouponOfProduct.stream().filter((item)->{
             return item.getIsUsable();
         }).collect(Collectors.toList());
@@ -32,7 +32,7 @@ public class CouponService {
             throw new Exception("404");
         }
         try {
-            Coupon coupon = new Coupon(request, product);
+            Coupon coupon = new Coupon(request);
             coupon=couponRepo.save(coupon);
             return coupon;
         } catch (Exception e) {
@@ -42,5 +42,12 @@ public class CouponService {
             throw new Exception("500");
         }
     }
-    
+    public boolean checkCoupon(String couponCode, float price) {
+        Coupon coupon = couponRepo.findFirstByCode(couponCode);
+        if(coupon==null) return false;
+        if(!coupon.getIsUsable()) return false;
+        if(coupon.getMinOrderValue()>price) return false;
+        
+        return true;
+    }
 }
