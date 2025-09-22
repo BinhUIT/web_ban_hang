@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.example.webbanghang.middleware.UUIDGenerator;
+import com.example.webbanghang.model.enums.EDiscountType;
 import com.example.webbanghang.model.enums.EOrderStatus;
 import com.example.webbanghang.model.enums.EPaymentType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,6 +45,10 @@ public class Order {
     private Long paymentCode;
     @Column(nullable = false, unique = true, updatable = false)
     private String code;
+    @ManyToOne
+    @JoinColumn(name="coupon_id")
+    private Coupon coupon;
+    private float originPrice;
     @PrePersist
     public void generateCode() {
         if(this.code==null) {
@@ -56,8 +61,30 @@ public class Order {
     public void setCode(String code) {
         this.code = code;
     }
+    public Coupon getCoupon() {
+        return coupon;
+    }
+    public float getDiscount() {
+        if(this.coupon==null) return 0;
+        if(this.getOriginPrice()<this.coupon.getMinOrderValue()) return 0;
+        if(this.coupon.getDiscountType()==EDiscountType.FIXED) return this.coupon.getDiscount();
+        return this.getOriginPrice()*this.coupon.getDiscount();
+    }
+    public float getOriginPrice() {
+        return this.originPrice;
+    } 
+    public void setOriginPrice(float originPrice) {
+        this.originPrice = originPrice;
+    }
+    public void setCoupon(Coupon coupon) {
+        if(this.getIsPaid()) return;
+        if(!coupon.getIsUsable()) return ;
+       if(this.getOriginPrice()<coupon.getMinOrderValue()) return;
+       this.coupon = coupon;
+       this.total = this.getOriginPrice()-this.getDiscount();
+    }
     public Order(int id, User user, Date createAt, Date updateAt, EOrderStatus status, float shipping_fee, float total,
-            List<OrderItem> orderItems,String email, String address, String phone, Payment payment, Long paymentCode, String code) {
+            List<OrderItem> orderItems,String email, String address, String phone, Payment payment, Long paymentCode, String code, Coupon coupon, float originPrice ) {
         this.id = id;
         this.user = user;
         this.createAt = createAt;
@@ -72,6 +99,7 @@ public class Order {
         this.payment = payment;
         this.paymentCode = paymentCode;
         this.code = code;
+        this.originPrice = originPrice;
     }
     
     public Order(User user, String address, String phone) {

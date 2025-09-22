@@ -250,5 +250,26 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PutMapping("user/apply_coupon")
+    public String putMethodName(@RequestParam int orderId, @RequestParam String couponCode, Authentication auth) {
+       String email = auth.getName();
+       try {
+         Order order = userService.applyCoupon(orderId, couponCode, email);
+         return "Success";
+       }
+        catch(Exception e) {
+            if(e.getMessage().equals("404")){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            if(e.getMessage().equals("400")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            if(e.getMessage().equals("Need buy more")) {
+                return "You need to buy more to use this coupon code";
+            }
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.example.webbanghang.middleware.Constants;
 import com.example.webbanghang.model.entity.Cart;
 import com.example.webbanghang.model.entity.CartItem;
+import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.OrderItem;
 import com.example.webbanghang.model.entity.ProductVariant;
@@ -31,6 +32,7 @@ import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.repository.CartItemRepository;
 import com.example.webbanghang.repository.CartRepository;
+import com.example.webbanghang.repository.CouponRepository;
 import com.example.webbanghang.repository.OrderItemRepository;
 import com.example.webbanghang.repository.OrderRepository;
 import com.example.webbanghang.repository.ProductVariantRepository;
@@ -46,8 +48,9 @@ public class UserService implements UserDetailsService {
     private final CartItemRepository cartItemRepo;
     private final OrderRepository orderRepo;
     private final OrderItemRepository orderItemRepo;
+    private final CouponRepository couponRepo;
     public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, CartRepository cartRepo, ProductVariantRepository productVariantRepo, CartItemRepository cartItemRepo,
-    OrderRepository orderRepo, OrderItemRepository orderItemRepo) {
+    OrderRepository orderRepo, OrderItemRepository orderItemRepo, CouponRepository couponRepo) {
         this.userRepo= userRepo;
         this.cartRepo= cartRepo;
         this.jwtService= jwtService;
@@ -56,6 +59,7 @@ public class UserService implements UserDetailsService {
         this.cartItemRepo = cartItemRepo;
         this.orderRepo= orderRepo;
         this.orderItemRepo= orderItemRepo;
+        this.couponRepo = couponRepo;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -195,6 +199,7 @@ public class UserService implements UserDetailsService {
        
         order.setShipping_fee(shippingFee);
         order.setTotal(productMoney+shippingFee);
+        order.setOriginPrice(productMoney);
         orderRepo.save(order);
         orderItemRepo.saveAll(listOrderItem);
         return order;
@@ -230,4 +235,21 @@ public class UserService implements UserDetailsService {
         return order;
     }
 
+    public Order applyCoupon(int orderId, String couponCode, String email) throws Exception {
+        Order order = orderRepo.findById(orderId).orElse(null);
+        Coupon coupon = couponRepo.findFirstByCode(couponCode);
+        if(order==null||coupon==null) {
+            throw new Exception("400");
+        }
+        if(order.getIsPaid()||order.getStatus()!=EOrderStatus.PENDING) {
+            throw new Exception("400");
+        }
+        if(order.getOriginPrice()<coupon.getMinOrderValue()) {
+            System.out.println(order.getOriginPrice());
+            throw new Exception("Need buy more");
+        }
+        order.setCoupon(coupon); 
+        orderRepo.save(order);
+        return order;
+    }
 }
