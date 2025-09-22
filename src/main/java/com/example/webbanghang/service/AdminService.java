@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.Payment;
 import com.example.webbanghang.model.enums.EOrderStatus;
-import com.example.webbanghang.model.enums.EPaymentType;
 import com.example.webbanghang.repository.OrderRepository;
 import com.example.webbanghang.repository.PaymentRepository;
 
@@ -48,9 +47,11 @@ public class AdminService {
             throw new Exception("400");
         }
         if(!order.getIsPaid()) {
-            Payment payment = new Payment(order, "VND", "Success", EPaymentType.COD);
-            paymentRepo.save(payment);
+            throw new Exception("400");
         }
+        Payment payment = order.getPayment();
+        payment.setStatus("SUCCESS"); 
+        paymentRepo.save(payment);
         order.setStatus(EOrderStatus.RECEIVED);
         order.setUpdateAt(new Date()); 
         orderRepo.save(order);
@@ -61,6 +62,9 @@ public class AdminService {
             throw new Exception("404");
         } 
         if(order.getStatus()!=EOrderStatus.PENDING) {
+            throw new Exception("400");
+        }
+        if(!order.getIsPaid()) {
             throw new Exception("400");
         }
         order.setStatus(EOrderStatus.SHIPPING);

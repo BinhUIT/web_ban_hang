@@ -114,6 +114,9 @@ public class Order {
         if(this.payment==null) return false;
         return this.payment.getStatus().equals("Success");
     }
+    public boolean getIsCreatePayment() {
+        return this.payment!=null;
+    }
     @JsonIgnore
     public Payment getPayment() {
         return this.payment;

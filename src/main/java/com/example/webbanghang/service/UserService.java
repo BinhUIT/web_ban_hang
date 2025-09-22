@@ -22,19 +22,23 @@ import com.example.webbanghang.model.entity.CartItem;
 import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.OrderItem;
+import com.example.webbanghang.model.entity.Payment;
 import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.enums.EOrderStatus;
+import com.example.webbanghang.model.enums.EPaymentType;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.request.OrderSubInfo;
 import com.example.webbanghang.model.request.UpdateCartRequest;
+import com.example.webbanghang.model.response.CreateOrderResponse;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.repository.CartItemRepository;
 import com.example.webbanghang.repository.CartRepository;
 import com.example.webbanghang.repository.CouponRepository;
 import com.example.webbanghang.repository.OrderItemRepository;
 import com.example.webbanghang.repository.OrderRepository;
+import com.example.webbanghang.repository.PaymentRepository;
 import com.example.webbanghang.repository.ProductVariantRepository;
 import com.example.webbanghang.repository.UserRepository;
 @Service
@@ -49,8 +53,11 @@ public class UserService implements UserDetailsService {
     private final OrderRepository orderRepo;
     private final OrderItemRepository orderItemRepo;
     private final CouponRepository couponRepo;
+    private final PaymentRepository paymentRepo;
+    
+    private final PaymentService paymentService;
     public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, CartRepository cartRepo, ProductVariantRepository productVariantRepo, CartItemRepository cartItemRepo,
-    OrderRepository orderRepo, OrderItemRepository orderItemRepo, CouponRepository couponRepo) {
+    OrderRepository orderRepo, OrderItemRepository orderItemRepo, CouponRepository couponRepo, PaymentRepository paymentRepo,@Lazy PaymentService paymentService) {
         this.userRepo= userRepo;
         this.cartRepo= cartRepo;
         this.jwtService= jwtService;
@@ -60,6 +67,8 @@ public class UserService implements UserDetailsService {
         this.orderRepo= orderRepo;
         this.orderItemRepo= orderItemRepo;
         this.couponRepo = couponRepo;
+        this.paymentRepo = paymentRepo;
+        this.paymentService = paymentService;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -180,7 +189,7 @@ public class UserService implements UserDetailsService {
         cartItemRepo.saveAll(listCartItem);
         return listCartItem;
     }
-    public Order orderFromCart(String email, OrderSubInfo subInfo) throws Exception {
+    public CreateOrderResponse orderFromCart(String email, OrderSubInfo subInfo) throws Exception {
         User user = (User) this.loadUserByUsername(email);
         if(user.getCart()==null) {
             throw new Exception("401");
@@ -202,7 +211,15 @@ public class UserService implements UserDetailsService {
         order.setOriginPrice(productMoney);
         orderRepo.save(order);
         orderItemRepo.saveAll(listOrderItem);
-        return order;
+        if(subInfo.getPaymentType().equals(EPaymentType.COD)) {
+            Payment payment = new Payment(order,"VND","UNPAID",EPaymentType.COD);
+            paymentRepo.save(payment);
+            return new CreateOrderResponse(order.getId(), "Success");
+        }
+        else {
+            return new CreateOrderResponse(order.getId(), paymentService.createPaymentLink(order));
+        }
+        
         
     }
     public Page<Order> getUserOrderHistory(String email, Pageable pageable) {

@@ -28,6 +28,7 @@ import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.request.OrderSubInfo;
 import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.CheckoutResponse;
+import com.example.webbanghang.model.response.CreateOrderResponse;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.service.OAuth2Service;
 import com.example.webbanghang.service.UserService;
@@ -176,7 +177,7 @@ public class UserController {
         return userService.getUserCart(email);
     }
     @PostMapping("/user/order") 
-    public Order order(Authentication auth, @RequestBody OrderSubInfo subInfo) {
+    public CreateOrderResponse order(Authentication auth, @RequestBody OrderSubInfo subInfo) {
         String email = auth.getName();
         try {
             return userService.orderFromCart(email, subInfo);

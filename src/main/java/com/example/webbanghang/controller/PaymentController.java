@@ -20,7 +20,7 @@ public class PaymentController {
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     } 
-    @PostMapping("/user/confirm_checkout/{orderId}")
+    @PostMapping("/user/confirm_checkout_online/{orderId}")
     public String getPayURL(Authentication auth, @PathVariable int orderId) {
         String email = auth.getName();
         try {
@@ -85,6 +85,25 @@ public class PaymentController {
     @GetMapping("/unsecure/pay_os/update_data") 
     public String testConnect() {
         return "Success";
+    }
+    @PostMapping("/user/confirm_cod/{orderId}") 
+    public String confirmCod(@PathVariable int orderId, Authentication auth) {
+        String email = auth.getName();
+        try {
+            paymentService.confirmCODCheckout(email, orderId);
+            return "Success";
+        }
+        catch(Exception e) {
+            if(e.getMessage().equals("404")){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            
+            if(e.getMessage().equals("401")) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+            }
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
 }

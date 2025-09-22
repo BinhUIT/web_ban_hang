@@ -50,6 +50,9 @@ public class PaymentService {
         if(user.getId()!=order.getUser().getId()) {
             throw new Exception("401");
         }
+        return createPaymentLink(order);
+    }
+    public String createPaymentLink( Order order) throws Exception {
         Dotenv dotenv = Dotenv.load();
         String clientId = dotenv.get("PAYOS_CLIENT_ID");
         String apiKey = dotenv.get("PAYOS_API_KEY");
@@ -132,6 +135,19 @@ public class PaymentService {
         }
         paymentRepo.save(new Payment(order, currency,status,EPaymentType.ONLINE));
         return true;
+        
+    }
+    public void confirmCODCheckout(String email, int orderId) throws Exception { 
+        Order order = orderRepo.findById(orderId).orElse(null);
+        if(order==null) {
+            throw new Exception("404");
+        }
+        User user =(User) userService.loadUserByUsername(email);
+        if(order.getUser().getId()!=user.getId()) {
+            throw new Exception("401");
+        } 
+        Payment payment = new Payment(order,"VND","UNPAIED",EPaymentType.COD);
+        paymentRepo.save(payment);
         
     }
 }
