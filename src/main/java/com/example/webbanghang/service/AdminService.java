@@ -64,12 +64,15 @@ public class AdminService {
         if(order.getStatus()!=EOrderStatus.PENDING) {
             throw new Exception("400");
         }
-        if(!order.getIsPaid()) {
+        /*if(!order.getIsPaid()) {
             throw new Exception("400");
-        }
+        }*/
         order.setStatus(EOrderStatus.SHIPPING);
         order.setUpdateAt(new Date()); 
         orderRepo.save(order);
+    }
+    public Order getOrderById(int orderId) {
+        return orderRepo.findById(orderId).orElse(null);
     }
 
 }

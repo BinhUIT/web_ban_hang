@@ -272,5 +272,22 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @PutMapping("/user/received_order/{id}") 
+    public Order receivedOrder(Authentication auth, @PathVariable int id) {
+        String email = auth.getName();
+        try {
+            return userService.receivedOrder(id, email);
+        } catch (Exception e) {
+            if(e.getMessage().equals("404")){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }
+            if(e.getMessage().equals("400")) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            }
+            
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     
 }

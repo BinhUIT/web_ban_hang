@@ -295,4 +295,20 @@ public class UserService implements UserDetailsService {
         orderRepo.save(order);
         return order;
     }
+    public Order receivedOrder(int orderId, String email) throws Exception {
+        User user = (User) this.loadUserByUsername(email);
+        Order order = orderRepo.findById(orderId).orElse(null);
+        if(order==null) {
+            throw new Exception("404");
+        } 
+        if(user.getId()!=order.getUser().getId()||order.getStatus()!=EOrderStatus.SHIPPING) {
+            throw new Exception("400");
+        } 
+        Payment payment = order.getPayment();
+        payment.setStatus("Success"); 
+        paymentRepo.save(payment);
+        order.setStatus(EOrderStatus.RECEIVED);
+        orderRepo.save(order);
+        return order;
+    }
 }

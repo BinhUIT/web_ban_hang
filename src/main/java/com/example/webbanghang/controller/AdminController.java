@@ -26,8 +26,12 @@ public class AdminController {
         this.couponService = couponService;
     } 
     @GetMapping("/admin/get_orders") 
-    public Page<Order> getOrders(@RequestParam("size") int size, @RequestParam("page") int page) {
+    public Page<Order> getOrders(@RequestParam int size, @RequestParam int page) {
         return this.adminService.findAllOrder(size, page);
+    }
+    @GetMapping("/admin/get_order/{id}") 
+    public Order getOrderById(@PathVariable int id) {
+        return this.adminService.getOrderById(id);
     }
     @PutMapping("/admin/cancel_order/{orderId}") 
     public String cancelOrder(@PathVariable int orderId) {
