@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Order;
+import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.request.CreateCouponRequest;
 import com.example.webbanghang.service.AdminService;
 import com.example.webbanghang.service.CouponService;
@@ -97,5 +98,9 @@ public class AdminController {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    @GetMapping("/admin/all_user") 
+    public Page<User> getAllUser(@RequestParam int size, @RequestParam int number) {
+        return adminService.findAllUser(size, number);
     }
 }

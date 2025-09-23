@@ -10,17 +10,21 @@ import org.springframework.stereotype.Service;
 
 import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.Payment;
+import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.enums.EOrderStatus;
 import com.example.webbanghang.repository.OrderRepository;
 import com.example.webbanghang.repository.PaymentRepository;
+import com.example.webbanghang.repository.UserRepository;
 
 @Service
 public class AdminService {
     private final OrderRepository orderRepo;
     private final PaymentRepository paymentRepo;
-    public AdminService(OrderRepository orderRepo, PaymentRepository paymentRepo) {
+    private final UserRepository userRepo;
+    public AdminService(OrderRepository orderRepo, PaymentRepository paymentRepo, UserRepository userRepo) {
         this.orderRepo = orderRepo;
         this.paymentRepo= paymentRepo;
+        this.userRepo = userRepo;
     } 
     public Page<Order> findAllOrder(int size, int number) {
         Pageable pageable = PageRequest.of(number,size,Sort.by(Sort.Direction.DESC,"createAt"));
@@ -73,6 +77,10 @@ public class AdminService {
     }
     public Order getOrderById(int orderId) {
         return orderRepo.findById(orderId).orElse(null);
+    }
+    public Page<User> findAllUser(int size, int number) {
+        Pageable pageable = PageRequest.of(number, size);
+        return userRepo.findByRole_Id(2, pageable);
     }
 
 }
