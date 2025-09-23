@@ -7,20 +7,27 @@ public class OrderSubInfo {
     private String address;
     private String phone;
     private EPaymentType paymentType;
+    private String couponCode;
     public OrderSubInfo() {
 
     } 
-    public OrderSubInfo( String address, String phone, EPaymentType paymentType){
+    public OrderSubInfo( String address, String phone, EPaymentType paymentType, String couponCode){
         
         this.address = address;
         this.phone= phone;
         this.paymentType = paymentType;
+        this.couponCode= couponCode;
     } 
      
     public String getAddress(){
         return this.address;
     } 
-    
+    public String getCouponCode() {
+        return this.couponCode;
+    } 
+    public void setCouponCode(String couponCode) {
+        this.couponCode = couponCode;
+    }
     public void setAddress(String address) {
         this.address = address;
     }

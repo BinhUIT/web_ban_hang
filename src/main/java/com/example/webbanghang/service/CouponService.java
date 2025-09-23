@@ -45,10 +45,11 @@ public class CouponService {
     }
     public CheckCouponResponse checkCoupon(String couponCode, float price) {
         Coupon coupon = couponRepo.findFirstByCode(couponCode);
-        if(coupon==null) return new CheckCouponResponse("Can not use",coupon);
-        if(!coupon.getIsUsable()) return new CheckCouponResponse("Can not use",coupon);
-        if(coupon.getMinOrderValue()>price) return new CheckCouponResponse("Need buy "+(int)(coupon.getMinOrderValue()-price)+" đ more to use",coupon);
+        if(coupon==null) return new CheckCouponResponse("Can not use",null);
+        if(!coupon.getIsUsable()) return new CheckCouponResponse("Can not use",null);
+        if(coupon.getMinOrderValue()>price) return new CheckCouponResponse("Need buy "+(int)(coupon.getMinOrderValue()-price)+" đ more to use",null);
         
         return new CheckCouponResponse("You can use this coupon",coupon);
     }
+    
 }
