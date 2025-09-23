@@ -34,7 +34,11 @@ public class ProductController {
     }
     @GetMapping("/unsecure/product/{id}")
     public Product getProductById(@PathVariable int id) {
-        return productService.getById(id);
+        Product product= productService.getById(id);
+        if(product==null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Not found");
+        }
+        return product;
     }
    
     
