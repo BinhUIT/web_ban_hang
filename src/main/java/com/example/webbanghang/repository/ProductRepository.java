@@ -18,4 +18,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     public Page<Product> findByIsEnableAndIdIn(boolean isEnable, List<Integer> listId, Pageable pageable);
     public Page<Product> findByIsEnableAndMinPriceBetween(boolean isEnable, Integer from, Integer to, Pageable pageable); 
     public Page<Product> findByIsEnableAndCategory_IdIn(boolean isEnable, List<Long> listCatIds, Pageable pageable);
+    public Page<Product> findAll(Pageable pageable);
 }

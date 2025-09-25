@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,16 +32,27 @@ import com.example.webbanghang.model.request.CreateProductRequest;
 import com.example.webbanghang.model.request.CreateProductVariantRequest;
 import com.example.webbanghang.model.request.UpdateProductRequest;
 import com.example.webbanghang.model.request.UpdateProductVariantRequest;
+import com.example.webbanghang.model.response.GetSizeAndColorResponse;
+import com.example.webbanghang.model.response.Response;
 import com.example.webbanghang.service.AdminService;
+import com.example.webbanghang.service.ColorService;
 import com.example.webbanghang.service.CouponService;
+import com.example.webbanghang.service.ProductService;
+import com.example.webbanghang.service.SizeService;
 
 @RestController
 public class AdminController {
     private final AdminService adminService;
     private final CouponService couponService;
-    public AdminController(AdminService adminService, CouponService couponService) {
+    private final ProductService productService;
+    private final ColorService colorService;
+    private final SizeService sizeService;
+    public AdminController(AdminService adminService, CouponService couponService, ProductService productService, ColorService colorService, SizeService sizeService) {
         this.adminService= adminService;
         this.couponService = couponService;
+        this.productService = productService;
+        this.colorService= colorService;
+        this.sizeService= sizeService;
     } 
     @GetMapping("/admin/get_orders") 
     public Page<Order> getOrders(@RequestParam int size, @RequestParam int page) {
@@ -118,30 +132,35 @@ public class AdminController {
         return adminService.findAllUser(size, number);
     }
     @PostMapping("/admin/create_product") 
-    public Product createProduct(@RequestPart("image") MultipartFile image, @RequestPart("info") CreateProductRequest request) {
+    public ResponseEntity<Response> createProduct(@RequestPart("image") MultipartFile image, @RequestPart("info") CreateProductRequest request) {
         try {
-            return adminService.createProduct(request, image);
+            return new ResponseEntity<>(new Response("Success",adminService.createProduct(request, image),200),HttpStatus.OK);
         } 
         catch(Exception e) {
-            throw ExceptionHandler.getResponseStatusException(e);
+            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
+            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
         }
     }
     @PostMapping("/admin/add_variant/{productId}")
-    public ProductVariant addVariant(@RequestPart("image") MultipartFile image, @RequestPart("info") CreateProductVariantRequest request, @PathVariable int productId) {
+    public ResponseEntity<Response> addVariant(@RequestPart("image") MultipartFile image, @RequestPart("info") CreateProductVariantRequest request, @PathVariable int productId) {
         try {
-            return adminService.addVariant(request, productId, image);
+            ProductVariant v=adminService.addVariant(request, productId, image);
+            return new ResponseEntity<>(new Response("Success",v,200), HttpStatus.OK);
         }
         catch(Exception e) {
-            throw ExceptionHandler.getResponseStatusException(e);
+             ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
+            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
         }
     }
     @PutMapping("/admin/update_product/{productId}") 
-    public Product updateProduct(@RequestPart(value="image", required=false) MultipartFile image, @RequestPart(value="info", required=false) UpdateProductRequest request, @PathVariable int productId) {
+    public ResponseEntity<Response> updateProduct(@RequestPart(value="image", required=false) MultipartFile image, @RequestPart(value="info", required=false) UpdateProductRequest request, @PathVariable int productId) {
         try {
-            return adminService.updateProduct(request, productId, image);
+            Product p = adminService.updateProduct(request, productId, image);
+            return new ResponseEntity<>(new Response("Success",p,200), HttpStatus.OK);
         }
         catch(Exception e) {
-            throw ExceptionHandler.getResponseStatusException(e);
+            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
+            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
         }
     }
     @PutMapping("/admin/update_product_variant/{variantId}")
@@ -181,5 +200,14 @@ public class AdminController {
             .status(ex.getStatusCode())
             .body(Map.of("message", ex.getReason()));
         }
+    }
+    @GetMapping("/admin/all_product") 
+    public Page<Product> getAllProduct(@RequestParam int size, @RequestParam int page) {
+        Pageable pageable = PageRequest.of(page,size);
+        return productService.findAllProducts(pageable);
+    }
+    @GetMapping("/unsecure/sizes_colors") 
+    public GetSizeAndColorResponse getSizeAndColor() {
+        return new GetSizeAndColorResponse(sizeService.getAll(),colorService.getAllColors());
     }
 }

@@ -117,6 +117,9 @@ public class ProductService {
     public List<Product> findAllProducts() {
         return productRepo.findAll();
     }
+    public Page<Product> findAllProducts(Pageable pageable) {
+        return productRepo.findAll(pageable);
+    }
     public Page<Product> findByListIds(List<Integer> listIds, Pageable page) {
         return productRepo.findByIdIn(listIds, page);
     }

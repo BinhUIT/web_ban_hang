@@ -180,16 +180,16 @@ public class AdminService {
         }
         
         if(file!=null) {
-            try {
-            String imagePath = ImageExtention.saveImage( file,"product");
-            product.setImage(imagePath);
-            
-            
-        }
-        catch(IOException e) {
-            
-            throw new Exception("Fail to upload image, please upload again");
-        }
+                try {
+                String imagePath = ImageExtention.saveImage( file,"product");
+                product.setImage(imagePath);
+                
+                
+            }
+            catch(IOException e) {
+                
+                throw new Exception("Fail to upload image, please upload again");
+            }
         }
         productRepo.save(product);
         return product;
