@@ -4,6 +4,8 @@ import java.util.Date;
 
 import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EEntitySatus;
+import com.example.webbanghang.model.request.CreateProductVariantRequest;
+import com.example.webbanghang.model.request.UpdateProductVariantRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -18,7 +20,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="PRODUCT_VARIANTS")
-public class ProductVariant {
+public class ProductVariant implements Comparable<ProductVariant> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private int id; 
@@ -46,6 +48,20 @@ public class ProductVariant {
         if(this.code ==null) {
             this.code = UUIDGenerator.getRanDomUUID();
         }
+    }
+    public void updateInfo(UpdateProductVariantRequest request) {
+        this.name= request.getName();
+        this.price = request.getPrice();
+        this.quantity = request.getQuantity();
+    }
+    public ProductVariant(CreateProductVariantRequest request, ProductColor color, ProductSize size) {
+        this.productColor=color;
+        this.productSize = size;
+        this.price= request.getPrice();
+        this.name= request.getName();
+        this.createAt = new Date();
+        this.status= EEntitySatus.ENABLE;
+        this.quantity = 0;
     }
     public ProductVariant() {
     }
@@ -180,6 +196,10 @@ public class ProductVariant {
     
     public float getRealPrice() {
         return 0f;
+    }
+    @Override
+    public int compareTo(ProductVariant o) {
+        return Float.compare(this.id, o.price);
     }
    
     

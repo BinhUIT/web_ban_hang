@@ -1,11 +1,14 @@
 package com.example.webbanghang.model.entity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.webbanghang.middleware.UUIDGenerator;
+import com.example.webbanghang.model.request.CreateProductRequest;
+import com.example.webbanghang.model.request.UpdateProductRequest;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -55,10 +58,34 @@ public class Product {
 
         }
     }
-    
+    public void updateInfo(UpdateProductRequest request) {
+        this.name=request.getName();
+        this.shortDesc= request.getShortDesc();
+        this.detailDesc = request.getDetailDesc();
+        this.update_at = new Date();
+    }
     @JsonIgnore
     public Category getCategory() {
         return category;
+    }
+    public void addVariant(ProductVariant variant) {
+        if(this.productVariants==null) {
+            this.productVariants = new ArrayList<>();
+        }
+        this.productVariants.add(variant);
+        this.update_at= new Date();
+        this.maxPrice =(int) Collections.max(this.productVariants).getPrice();
+        this.minPrice=  (int) Collections.min(this.productVariants).getPrice();
+        variant.setProduct(this);
+    }
+    public void updateVarian() {
+        this.maxPrice =(int) Collections.max(this.productVariants).getPrice();
+        this.minPrice=  (int) Collections.min(this.productVariants).getPrice();
+        int quantity=0;
+        for(int i=0;i<this.productVariants.size();i++) {
+            quantity+=this.productVariants.get(i).getQuantity();
+        }
+        this.quantity= quantity;
     }
     @JsonIgnore
     public List<TagProducts> getTagProducts() {
@@ -185,7 +212,22 @@ public class Product {
         this.tagProducts= tagProducts;
         this.code = code;
     }
-    
+    public Product(CreateProductRequest request, Category category) {
+        this.category = category;
+        this.name= request.getName();
+        this.shortDesc = request.getShortDesc();
+        this.detailDesc = request.getDetailDesc();
+        this.create_at= new Date();
+        this.update_at= null;
+        this.rating=0f;
+        this.maxPrice=0;
+        this.minPrice=0;
+        this.quantity =0;
+        this.sold=0;
+        this.isEnable=false;
+        this.tagProducts= new ArrayList<>();
+        
+    }
     public String getImage() {
         return image;
     }

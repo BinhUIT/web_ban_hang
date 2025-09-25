@@ -120,4 +120,14 @@ public class ProductService {
     public Page<Product> findByListIds(List<Integer> listIds, Pageable page) {
         return productRepo.findByIdIn(listIds, page);
     }
+    public boolean isVariantExist(int colorId, int sizeId, Product product) {
+        for(ProductVariant v: product.getProductVariants()) {
+            if(v.getProductColor().getId()==colorId) {
+                if(v.getProductSize().getId()==sizeId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }
