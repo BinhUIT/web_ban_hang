@@ -79,6 +79,12 @@ public class Product {
         variant.setProduct(this);
     }
     public void updateVarian() {
+        if(this.productVariants==null||this.productVariants.isEmpty()) {
+            this.maxPrice=0;
+            this.minPrice=0;
+            this.quantity=0;
+            return;
+        }
         this.maxPrice =(int) Collections.max(this.productVariants).getPrice();
         this.minPrice=  (int) Collections.min(this.productVariants).getPrice();
         int quantity=0;

@@ -175,7 +175,9 @@ public class AdminService {
             throw new Exception("Product not found");
 
         }
-        product.updateInfo(request);
+        if(request!=null) {
+            product.updateInfo(request);
+        }
         
         if(file!=null) {
             try {
@@ -197,7 +199,11 @@ public class AdminService {
         if(productVariant==null) {
             throw new Exception("Product variant not found");
         }
-        productVariant.updateInfo(request);
+        Product product = productVariant.getProduct();
+        if(request!=null) {
+            productVariant.updateInfo(request);
+            product.updateVarian();
+        }
         if(image!=null) {
             try {
             String imagePath = ImageExtention.saveImage( image,"product");
@@ -211,8 +217,10 @@ public class AdminService {
         }
         
         
+        
 
     }
+    productRepo.save(product);
     return productVariantRepo.save(productVariant);
 }
     public void deleteProduct(int productId) throws Exception {
@@ -229,6 +237,11 @@ public class AdminService {
             return item.getId();
         }).collect(Collectors.toList());
         List<OrderItem> listOrderItem = orderItemRepo.findByProductVariant_IdIn(listVariantId);
+        for(OrderItem item:listOrderItem) {
+            if(item.getOrder().getStatus()==EOrderStatus.PENDING||item.getOrder().getStatus()==EOrderStatus.SHIPPING) {
+                throw new Exception("Can not delete");
+            }
+        }
         orderItemRepo.deleteAll(listOrderItem);
         productVariantRepo.deleteAll(product.getProductVariants());
         productRepo.delete(product);
@@ -238,7 +251,15 @@ public class AdminService {
         if(productVariant==null) {
             throw new Exception("Product variant not found");
         }
-         List<OrderItem> listOrderItem = orderItemRepo.findByProductVariant_Id(productVariantId);
+        List<OrderItem> listOrderItem = orderItemRepo.findByProductVariant_Id(productVariantId);
+        for(OrderItem item:listOrderItem) {
+            if(item.getOrder().getStatus()==EOrderStatus.PENDING||item.getOrder().getStatus()==EOrderStatus.SHIPPING) {
+                throw new Exception("Can not delete");
+            }
+        }
+        Product product = productVariant.getProduct();
+        product.updateVarian();
+        productRepo.save(product);
         orderItemRepo.deleteAll(listOrderItem);
         productVariantRepo.delete(productVariant);
     }

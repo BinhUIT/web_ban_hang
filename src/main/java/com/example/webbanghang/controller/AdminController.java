@@ -1,7 +1,12 @@
 package com.example.webbanghang.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +27,8 @@ import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.request.CreateCouponRequest;
 import com.example.webbanghang.model.request.CreateProductRequest;
 import com.example.webbanghang.model.request.CreateProductVariantRequest;
+import com.example.webbanghang.model.request.UpdateProductRequest;
+import com.example.webbanghang.model.request.UpdateProductVariantRequest;
 import com.example.webbanghang.service.AdminService;
 import com.example.webbanghang.service.CouponService;
 
@@ -119,7 +126,7 @@ public class AdminController {
             throw ExceptionHandler.getResponseStatusException(e);
         }
     }
-    @PostMapping("admin/add_variant/{productId}")
+    @PostMapping("/admin/add_variant/{productId}")
     public ProductVariant addVariant(@RequestPart("image") MultipartFile image, @RequestPart("info") CreateProductVariantRequest request, @PathVariable int productId) {
         try {
             return adminService.addVariant(request, productId, image);
@@ -128,5 +135,51 @@ public class AdminController {
             throw ExceptionHandler.getResponseStatusException(e);
         }
     }
-    
+    @PutMapping("/admin/update_product/{productId}") 
+    public Product updateProduct(@RequestPart(value="image", required=false) MultipartFile image, @RequestPart(value="info", required=false) UpdateProductRequest request, @PathVariable int productId) {
+        try {
+            return adminService.updateProduct(request, productId, image);
+        }
+        catch(Exception e) {
+            throw ExceptionHandler.getResponseStatusException(e);
+        }
+    }
+    @PutMapping("/admin/update_product_variant/{variantId}")
+    public ProductVariant updateProductVariant(@RequestPart(value="image", required=false) MultipartFile file, @RequestPart(value="info", required=false) UpdateProductVariantRequest request, @PathVariable int variantId) {
+        try {
+            return adminService.updateProductVariant(request, variantId, file);
+        } 
+        catch(Exception e) {
+            throw ExceptionHandler.getResponseStatusException(e);
+        }
+    }
+    @DeleteMapping("/admin/delete_product/{productId}") 
+    public ResponseEntity<Map<String,String>> deleteProduct(@PathVariable int productId) {
+        try {
+            adminService.deleteProduct(productId);
+            Map<String,String> res = Map.of("message","success");
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } 
+        catch(Exception e) {
+            ResponseStatusException ex = ExceptionHandler.getResponseStatusException(e);
+            return ResponseEntity
+            .status(ex.getStatusCode())
+            .body(Map.of("message", ex.getReason()));
+        }
+    }
+    @DeleteMapping("/admin/delete_product_variant/{productVariantId}") 
+    public ResponseEntity<Map<String,String>> deleteProductVariant(@PathVariable int productVariantId) {
+        try {
+            adminService.deleteProductVariant(productVariantId); 
+            Map<String,String> res = new HashMap<>();
+            res.put("message", "Success");
+            return new ResponseEntity<>(res, HttpStatus.OK);
+        } 
+        catch(Exception e) {
+            ResponseStatusException ex = ExceptionHandler.getResponseStatusException(e);
+            return ResponseEntity
+            .status(ex.getStatusCode())
+            .body(Map.of("message", ex.getReason()));
+        }
+    }
 }

@@ -15,6 +15,10 @@ public class ExceptionHandler {
         if(message.equals("Fail to upload image, please upload again")) {
             return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,message);
         }
+        if(message.equals("Can not delete")) {
+            return new ResponseStatusException(HttpStatus.CONFLICT, message);
+        }
+        e.printStackTrace();
         return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
