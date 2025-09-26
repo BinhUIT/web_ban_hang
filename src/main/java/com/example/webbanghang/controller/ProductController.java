@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Product;
+import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.esmodels.Products;
+import com.example.webbanghang.model.response.Response;
 import com.example.webbanghang.service.CouponService;
 import com.example.webbanghang.service.ProductService;
 
@@ -129,6 +132,13 @@ public class ProductController {
         
         return couponService.getAllUsableCoupon();
     }
-    
+    @GetMapping("/unsecure/find_variant/{variantId}") 
+    public ResponseEntity<Response> getProductVariantById(@PathVariable int variantId) {
+        ProductVariant variant = productService.getVariantById(variantId);
+        if(variant==null) {
+            return new ResponseEntity<>(new Response("Variant Not Found",null,404),HttpStatus.NOT_FOUND);
+        } 
+        return new ResponseEntity<>(new Response("OK",variant,200), HttpStatus.OK);
+    }
     
 }

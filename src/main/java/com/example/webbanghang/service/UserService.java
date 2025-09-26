@@ -206,6 +206,9 @@ public class UserService implements UserDetailsService {
             productMoney= productMoney+cartItem.getAmount()*cartItem.getProductVariant().getPrice();
             shippingFee=shippingFee+Constants.shippingFee;
            listOrderItem.add(new OrderItem(cartItem, order));
+           ProductVariant productVariant = cartItem.getProductVariant();
+           productVariant.setCanDelete(false);
+           productVariantRepo.save(productVariant);
            cartItemRepo.delete(cartItem);
         }
         
@@ -269,6 +272,7 @@ public class UserService implements UserDetailsService {
         } 
         order.setStatus(EOrderStatus.CANCELED);
         order.setUpdateAt(new Date()); 
+        
         orderRepo.save(order);
         return order;
     }

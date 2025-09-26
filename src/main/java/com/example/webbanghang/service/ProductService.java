@@ -133,4 +133,7 @@ public class ProductService {
         }
         return false;
     }
+    public ProductVariant getVariantById(int variantId) {
+        return productVariantRepo.findById(variantId).orElse(null);
+    }
 }

@@ -195,6 +195,7 @@ public class AdminController {
             return new ResponseEntity<>(res, HttpStatus.OK);
         } 
         catch(Exception e) {
+            e.printStackTrace();
             ResponseStatusException ex = ExceptionHandler.getResponseStatusException(e);
             return ResponseEntity
             .status(ex.getStatusCode())

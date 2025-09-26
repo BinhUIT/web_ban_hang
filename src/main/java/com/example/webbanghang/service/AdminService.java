@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.webbanghang.middleware.ImageExtention;
+import com.example.webbanghang.model.entity.CartItem;
 import com.example.webbanghang.model.entity.Category;
 import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.OrderItem;
@@ -26,6 +27,7 @@ import com.example.webbanghang.model.request.CreateProductRequest;
 import com.example.webbanghang.model.request.CreateProductVariantRequest;
 import com.example.webbanghang.model.request.UpdateProductRequest;
 import com.example.webbanghang.model.request.UpdateProductVariantRequest;
+import com.example.webbanghang.repository.CartItemRepository;
 import com.example.webbanghang.repository.CategoryRepository;
 import com.example.webbanghang.repository.OrderItemRepository;
 import com.example.webbanghang.repository.OrderRepository;
@@ -50,8 +52,10 @@ public class AdminService {
     private final ProductSizeRepository productSizeRepo;
     private final ProductVariantRepository productVariantRepo;
     private final OrderItemRepository orderItemRepo;
+    private final CartItemRepository cartItemRepo;
     public AdminService(OrderRepository orderRepo, PaymentRepository paymentRepo, UserRepository userRepo, CategoryRepository categoryRepo, ProductRepository productRepo,
-    ProductService productService, ProductColorRepository productColorRepo, ProductSizeRepository productSizeRepo, ProductVariantRepository productVariantRepo, OrderItemRepository orderItemRepo) {
+    ProductService productService, ProductColorRepository productColorRepo, ProductSizeRepository productSizeRepo, ProductVariantRepository productVariantRepo, OrderItemRepository orderItemRepo,
+    CartItemRepository cartItemRepo) {
         this.orderRepo = orderRepo;
         this.paymentRepo= paymentRepo;
         this.userRepo = userRepo;
@@ -62,6 +66,7 @@ public class AdminService {
         this.productSizeRepo= productSizeRepo;
         this.productVariantRepo = productVariantRepo;
         this.orderItemRepo = orderItemRepo;
+        this.cartItemRepo = cartItemRepo;
     } 
     public Page<Order> findAllOrder(int size, int number) {
         Pageable pageable = PageRequest.of(number,size,Sort.by(Sort.Direction.DESC,"createAt"));
@@ -242,6 +247,8 @@ public class AdminService {
                 throw new Exception("Can not delete");
             }
         }
+        List<CartItem> listCartItems= cartItemRepo.findByProductVariant_IdIn(listVariantId);
+        cartItemRepo.deleteAll(listCartItems);
         orderItemRepo.deleteAll(listOrderItem);
         productVariantRepo.deleteAll(product.getProductVariants());
         productRepo.delete(product);
@@ -257,6 +264,8 @@ public class AdminService {
                 throw new Exception("Can not delete");
             }
         }
+        List<CartItem> listCartItems = cartItemRepo.findByProductVariant_Id(productVariantId);
+        cartItemRepo.deleteAll(listCartItems);
         Product product = productVariant.getProduct();
         product.updateVarian();
         productRepo.save(product);

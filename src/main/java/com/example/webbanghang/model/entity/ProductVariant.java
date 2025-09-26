@@ -2,6 +2,8 @@ package com.example.webbanghang.model.entity;
 
 import java.util.Date;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EEntitySatus;
 import com.example.webbanghang.model.request.CreateProductVariantRequest;
@@ -43,6 +45,9 @@ public class ProductVariant implements Comparable<ProductVariant> {
     private EEntitySatus status;
     @Column(nullable = false, unique = true, updatable = false)
     private String code;
+    @ColumnDefault("true")
+    private boolean canDelete;
+
     @PrePersist
     public void generateCode() {
         if(this.code ==null) {
@@ -62,6 +67,7 @@ public class ProductVariant implements Comparable<ProductVariant> {
         this.createAt = new Date();
         this.status= EEntitySatus.ENABLE;
         this.quantity = 0;
+        this.canDelete=true;
     }
     public ProductVariant() {
     }
@@ -101,11 +107,9 @@ public class ProductVariant implements Comparable<ProductVariant> {
     public void setStatus(EEntitySatus status) {
         this.status = status;
     }
-
-
-
+    
     public ProductVariant(int id, Product product, ProductColor productColor, ProductSize productSize, float price,
-            long quantity, String image, String name, Date createAt, Date updateAt, EEntitySatus status, String code) {
+            long quantity, String image, String name, Date createAt, Date updateAt, EEntitySatus status, String code, boolean canDelete) {
         this.id = id;
         this.product = product;
         this.productColor = productColor;
@@ -118,6 +122,7 @@ public class ProductVariant implements Comparable<ProductVariant> {
         this.updateAt = updateAt;
         this.status = status;
         this.code = code;
+        this.canDelete = canDelete;
     }
 
 
@@ -200,6 +205,12 @@ public class ProductVariant implements Comparable<ProductVariant> {
     @Override
     public int compareTo(ProductVariant o) {
         return Float.compare(this.id, o.price);
+    }
+    public boolean isCanDelete() {
+        return canDelete;
+    }
+    public void setCanDelete(boolean canDelete) {
+        this.canDelete = canDelete;
     }
    
     
