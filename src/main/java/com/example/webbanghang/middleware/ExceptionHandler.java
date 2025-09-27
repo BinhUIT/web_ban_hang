@@ -18,6 +18,9 @@ public class ExceptionHandler {
         if(message.equals("Can not delete")) {
             return new ResponseStatusException(HttpStatus.CONFLICT, message);
         }
+        if(message.equals("401")) {
+            return new ResponseStatusException(HttpStatus.UNAUTHORIZED,message);
+        }
         e.printStackTrace();
         return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
     }

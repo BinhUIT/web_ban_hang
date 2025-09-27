@@ -22,8 +22,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name="users")
@@ -45,7 +45,7 @@ public class User implements UserDetails {
     private Date createAt;
     private Date updateAt;
     private boolean isActive;
-    @OneToOne(mappedBy = "user") 
+    @Transient
     private Cart cart;
     private String phone;
     private String address;

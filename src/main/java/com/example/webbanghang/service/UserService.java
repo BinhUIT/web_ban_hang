@@ -36,8 +36,6 @@ import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.CheckCouponResponse;
 import com.example.webbanghang.model.response.CreateOrderResponse;
 import com.example.webbanghang.model.response.LoginResponse;
-import com.example.webbanghang.repository.CartItemRepository;
-import com.example.webbanghang.repository.CartRepository;
 import com.example.webbanghang.repository.CouponRepository;
 import com.example.webbanghang.repository.OrderItemRepository;
 import com.example.webbanghang.repository.OrderRepository;
@@ -50,23 +48,23 @@ public class UserService implements UserDetailsService {
     
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final CartRepository cartRepo;
+    
     private final ProductVariantRepository productVariantRepo;
-    private final CartItemRepository cartItemRepo;
+    
     private final OrderRepository orderRepo;
     private final OrderItemRepository orderItemRepo;
     private final CouponRepository couponRepo;
     private final PaymentRepository paymentRepo;
     private final CouponService couponService;
     private final PaymentService paymentService;
-    public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, CartRepository cartRepo, ProductVariantRepository productVariantRepo, CartItemRepository cartItemRepo,
+    public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, ProductVariantRepository productVariantRepo, 
     OrderRepository orderRepo, OrderItemRepository orderItemRepo, CouponRepository couponRepo, PaymentRepository paymentRepo,@Lazy PaymentService paymentService, @Lazy CouponService couponService) {
         this.userRepo= userRepo;
-        this.cartRepo= cartRepo;
+        
         this.jwtService= jwtService;
         this.authenticationManager= authenticationManager;
         this.productVariantRepo= productVariantRepo;
-        this.cartItemRepo = cartItemRepo;
+        
         this.orderRepo= orderRepo;
         this.orderItemRepo= orderItemRepo;
         this.couponRepo = couponRepo;
@@ -103,7 +101,7 @@ public class UserService implements UserDetailsService {
             newCart.setCreateAt(new Date()); 
             newCart.setAmount(0);
             cart=newCart;
-            cartRepo.save(newCart);
+            
         }
         else {
             for(CartItem cItem: cart.getCartItems()) {
@@ -122,13 +120,13 @@ public class UserService implements UserDetailsService {
         newCartItem.setProductVariant(productVariant); 
         newCartItem.setAmount(request.getAmount());
 
-        cartRepo.save(cart);
-        cartItemRepo.save(newCartItem);
+        
+        
         return newCartItem;
 
     }
     private CartItem validateUpdateRequest(UpdateCartRequest request, User user) throws Exception {
-        CartItem cartItem = cartItemRepo.findById(request.getCartItemId()).orElse(null);
+        CartItem cartItem = new CartItem();
         if(cartItem==null) {
             throw new Exception("404");
         }
@@ -144,7 +142,7 @@ public class UserService implements UserDetailsService {
         }
         CartItem cartItem = validateUpdateRequest(request, user);
         cartItem.setAmount(request.getNewAmount());
-        cartItemRepo.save(cartItem);
+        
         return cartItem;
     } 
     public void deleteCartItem(int cartItemId, String email) throws Exception {
@@ -152,7 +150,7 @@ public class UserService implements UserDetailsService {
         if(user.getCart()==null) {
             throw new Exception("401");
         }
-        CartItem cartItem = cartItemRepo.findById(cartItemId).orElse(null);
+        CartItem cartItem = new CartItem();
         if(cartItem==null) {
             throw new Exception("404");
         }
@@ -161,8 +159,8 @@ public class UserService implements UserDetailsService {
         }
         Cart cart = user.getCart();
         cart.setAmount(cart.getAmount()-1);
-        cartRepo.save(cart);
-        cartItemRepo.delete(cartItem); 
+       
+       
     }
     public void clearCart(String email) throws Exception {
         User user = (User) this.loadUserByUsername(email);
@@ -172,8 +170,8 @@ public class UserService implements UserDetailsService {
         List<CartItem> listCartItem = user.getCart().getCartItems();
         Cart cart = user.getCart();
         cart.setAmount(0);
-        cartRepo.save(cart);
-        cartItemRepo.deleteAll(listCartItem);
+        
+        
     }
     public Cart getUserCart(String email) {
         User user = (User) this.loadUserByUsername(email);
@@ -185,8 +183,12 @@ public class UserService implements UserDetailsService {
             throw new Exception("User not found");
         }
         Cart cart = user.getCart();
+        if(cart==null) {
+            cart = new Cart();
+        }
         cart.setCartItems(new ArrayList<>());
         for(int i=0;i<cartData.getListDetails().size();i++) {
+            int amount=0;
             ProductVariant pVariant = productVariantRepo.findById(cartData.getListDetails().get(i).getProductVariantId()).orElse(null);
             if(pVariant!=null) {
                 CartItem cartItem= new CartItem();
@@ -194,7 +196,9 @@ public class UserService implements UserDetailsService {
                 cartItem.setAmount(cartData.getListDetails().get(i).getAmount());
                 cartItem.setId(i);
                 cart.getCartItems().add(cartItem);
+                amount++;
             }
+            cart.setAmount(amount);
         }
         return cart;
     }
@@ -209,30 +213,29 @@ public class UserService implements UserDetailsService {
             cartItem.setAmount(request.getNewAmount());
             listCartItem.add(cartItem);
         }
-        cartItemRepo.saveAll(listCartItem);
+        
         return listCartItem;
     }
-    public CreateOrderResponse orderFromCart(String email, OrderSubInfo subInfo) throws Exception {
+    
+    public CreateOrderResponse orderFromCart(String email, OrderSubInfo subInfo, Cart cart) throws Exception {
         User user = (User) this.loadUserByUsername(email);
-        if(user.getCart()==null) {
-            throw new Exception("401");
-        }
+        
         Order order = new Order(user, subInfo.getAddress(), subInfo.getPhone()); 
         
         float productMoney=0;
         float shippingFee=0;
         List<OrderItem> listOrderItem = new ArrayList<>();
-        for(CartItem cartItem :user.getCart().getCartItems()) {
+        for(CartItem cartItem :cart.getCartItems()) {
             productMoney= productMoney+cartItem.getAmount()*cartItem.getProductVariant().getPrice();
-            shippingFee=shippingFee+Constants.shippingFee;
+            
            listOrderItem.add(new OrderItem(cartItem, order));
            ProductVariant productVariant = cartItem.getProductVariant();
            productVariant.setCanDelete(false);
            productVariantRepo.save(productVariant);
-           cartItemRepo.delete(cartItem);
+           
         }
         
-        order.setShipping_fee(shippingFee);
+        order.setShipping_fee(Constants.shippingFee);
         order.setOriginPrice(productMoney+shippingFee); 
         if(subInfo.getCouponCode()!=null&&!subInfo.getCouponCode().equals("")) {
             CheckCouponResponse checkCoupon = couponService.checkCoupon(subInfo.getCouponCode(), productMoney);

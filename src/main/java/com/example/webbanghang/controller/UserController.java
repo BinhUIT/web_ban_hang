@@ -28,12 +28,13 @@ import com.example.webbanghang.model.redismodel.CartData;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
-import com.example.webbanghang.model.request.OrderSubInfo;
+import com.example.webbanghang.model.request.OrderRequest;
 import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.CheckoutResponse;
 import com.example.webbanghang.model.response.CreateOrderResponse;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.model.response.Response;
+import com.example.webbanghang.service.CartService;
 import com.example.webbanghang.service.OAuth2Service;
 import com.example.webbanghang.service.UserService;
 
@@ -41,9 +42,11 @@ import com.example.webbanghang.service.UserService;
 public class UserController {
     private final UserService userService; 
     private final OAuth2Service oAuth2Service;
-    public UserController(UserService userService, OAuth2Service oAuth2Service) {
+    private final CartService cartService;
+    public UserController(UserService userService, OAuth2Service oAuth2Service, CartService cartService) {
         this.userService= userService;
         this.oAuth2Service= oAuth2Service;
+        this.cartService = cartService;
     }
     @GetMapping("/unsecure/test") 
     public String test() {
@@ -192,18 +195,17 @@ public class UserController {
         }
     }
     @PostMapping("/user/order") 
-    public CreateOrderResponse order(Authentication auth, @RequestBody OrderSubInfo subInfo) {
+    public ResponseEntity<Response> order(Authentication auth, @RequestBody OrderRequest request) {
         String email = auth.getName();
         try {
-            return userService.orderFromCart(email, subInfo);
+            Cart cart = cartService.createCartFromMetaData(request.getCartData(), email);
+            
+            CreateOrderResponse response = userService.orderFromCart(email, request.getSubInfo(), cart);
+            return new ResponseEntity<>(new Response("Success",response,200), HttpStatus.OK);
         }
         catch (Exception e) {
-            String message = e.getMessage();
-            if(message.equals("401")) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No permission");
-        
-            }
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Server error");
+             ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
+            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
         }
         
     }
