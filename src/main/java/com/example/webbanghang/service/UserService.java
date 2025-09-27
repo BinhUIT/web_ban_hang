@@ -28,6 +28,7 @@ import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.enums.EDiscountType;
 import com.example.webbanghang.model.enums.EOrderStatus;
 import com.example.webbanghang.model.enums.EPaymentType;
+import com.example.webbanghang.model.redismodel.CartData;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.request.OrderSubInfo;
@@ -177,6 +178,25 @@ public class UserService implements UserDetailsService {
     public Cart getUserCart(String email) {
         User user = (User) this.loadUserByUsername(email);
         return user.getCart();
+    }
+    public Cart getCartFromMetaData(CartData cartData) throws Exception {
+        User user = this.userRepo.findById(cartData.getUserId()).orElse(null);
+        if(user==null) {
+            throw new Exception("User not found");
+        }
+        Cart cart = user.getCart();
+        cart.setCartItems(new ArrayList<>());
+        for(int i=0;i<cartData.getListDetails().size();i++) {
+            ProductVariant pVariant = productVariantRepo.findById(cartData.getListDetails().get(i).getProductVariantId()).orElse(null);
+            if(pVariant!=null) {
+                CartItem cartItem= new CartItem();
+                cartItem.setProductVariant(pVariant);
+                cartItem.setAmount(cartData.getListDetails().get(i).getAmount());
+                cartItem.setId(i);
+                cart.getCartItems().add(cartItem);
+            }
+        }
+        return cart;
     }
     public List<CartItem> updateAllCartItem(List<UpdateCartRequest> requests, String email) throws Exception {
         User user = (User) this.loadUserByUsername(email);

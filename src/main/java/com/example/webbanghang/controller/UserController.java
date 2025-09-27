@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.webbanghang.middleware.ExceptionHandler;
 import com.example.webbanghang.model.entity.Cart;
 import com.example.webbanghang.model.entity.CartItem;
 import com.example.webbanghang.model.entity.Order;
+import com.example.webbanghang.model.redismodel.CartData;
 import com.example.webbanghang.model.request.AddToCartRequest;
 import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
@@ -30,6 +33,7 @@ import com.example.webbanghang.model.request.UpdateCartRequest;
 import com.example.webbanghang.model.response.CheckoutResponse;
 import com.example.webbanghang.model.response.CreateOrderResponse;
 import com.example.webbanghang.model.response.LoginResponse;
+import com.example.webbanghang.model.response.Response;
 import com.example.webbanghang.service.OAuth2Service;
 import com.example.webbanghang.service.UserService;
 
@@ -175,6 +179,17 @@ public class UserController {
     public Cart getUserCart(Authentication auth) {
         String email= auth.getName();
         return userService.getUserCart(email);
+    }
+    @PostMapping("/user/get_cart") 
+    public ResponseEntity<Response> getCart(@RequestBody CartData cartData) {
+        try {
+            Cart cart = userService.getCartFromMetaData(cartData);
+            return new ResponseEntity<>(new Response("Success",cart,200), HttpStatus.OK);
+        }
+        catch(Exception e) {
+            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
+            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
+        }
     }
     @PostMapping("/user/order") 
     public CreateOrderResponse order(Authentication auth, @RequestBody OrderSubInfo subInfo) {
