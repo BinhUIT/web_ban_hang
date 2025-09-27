@@ -1,5 +1,6 @@
 package com.example.webbanghang.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,6 +81,20 @@ public class AdminService {
         } 
         order.setStatus(EOrderStatus.CANCELED);
         order.setUpdateAt(new Date()); 
+        List<OrderItem> listOrderItems= order.getOrderItems();
+         List<Product> listProducts = new ArrayList<>();
+        List<ProductVariant> listProductVariants = new ArrayList<>();
+        for(OrderItem i:listOrderItems) {
+            ProductVariant pv = i.getProductVariant();
+            pv.setQuantity(pv.getQuantity()-i.getAmount());
+            Product p= pv.getProduct();
+            p.setQuantity(p.getQuantity()-i.getAmount());
+            p.setSold(p.getSold()+i.getAmount());
+            listProducts.add(p);
+            listProductVariants.add(pv);
+        }
+        productRepo.saveAll(listProducts);
+        productVariantRepo.saveAll(listProductVariants);
         orderRepo.save(order);
     }
     public void shippedOrder(int orderId) throws Exception {
@@ -99,6 +114,20 @@ public class AdminService {
         order.setStatus(EOrderStatus.RECEIVED);
         order.setUpdateAt(new Date()); 
         orderRepo.save(order);
+        List<ProductVariant> listProductVariants = new ArrayList<>();
+        List<OrderItem> listOrderItems= order.getOrderItems();
+        List<Product> listProducts = new ArrayList<>();
+        for(OrderItem i:listOrderItems) {
+            ProductVariant pv = i.getProductVariant();
+            pv.setQuantity(pv.getQuantity()-i.getAmount());
+            Product p= pv.getProduct();
+            p.setQuantity(p.getQuantity()-i.getAmount());
+
+            listProducts.add(p);
+            listProductVariants.add(pv);
+        }
+        productRepo.saveAll(listProducts);
+        productVariantRepo.saveAll(listProductVariants);
     }
     public void shipOrder(int orderId) throws Exception {
          Order order = orderRepo.findById(orderId).orElse(null);
@@ -114,6 +143,20 @@ public class AdminService {
         order.setStatus(EOrderStatus.SHIPPING);
         order.setUpdateAt(new Date()); 
         orderRepo.save(order);
+        List<ProductVariant> listProductVariants = new ArrayList<>();
+        List<OrderItem> listOrderItems= order.getOrderItems();
+        List<Product> listProducts = new ArrayList<>();
+        for(OrderItem i:listOrderItems) {
+            ProductVariant pv = i.getProductVariant();
+            pv.setQuantity(pv.getQuantity()-i.getAmount());
+            Product p= pv.getProduct();
+            p.setQuantity(p.getQuantity()-i.getAmount());
+
+            listProducts.add(p);
+            listProductVariants.add(pv);
+        }
+        productRepo.saveAll(listProducts);
+        productVariantRepo.saveAll(listProductVariants);
     }
     public Order getOrderById(int orderId) {
         return orderRepo.findById(orderId).orElse(null);

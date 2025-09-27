@@ -23,6 +23,7 @@ import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.OrderItem;
 import com.example.webbanghang.model.entity.Payment;
+import com.example.webbanghang.model.entity.Product;
 import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.model.enums.EDiscountType;
@@ -40,6 +41,7 @@ import com.example.webbanghang.repository.CouponRepository;
 import com.example.webbanghang.repository.OrderItemRepository;
 import com.example.webbanghang.repository.OrderRepository;
 import com.example.webbanghang.repository.PaymentRepository;
+import com.example.webbanghang.repository.ProductRepository;
 import com.example.webbanghang.repository.ProductVariantRepository;
 import com.example.webbanghang.repository.UserRepository;
 @Service
@@ -50,7 +52,7 @@ public class UserService implements UserDetailsService {
     private final AuthenticationManager authenticationManager;
     
     private final ProductVariantRepository productVariantRepo;
-    
+    private final ProductRepository productRepo;
     private final OrderRepository orderRepo;
     private final OrderItemRepository orderItemRepo;
     private final CouponRepository couponRepo;
@@ -58,7 +60,7 @@ public class UserService implements UserDetailsService {
     private final CouponService couponService;
     private final PaymentService paymentService;
     public UserService(UserRepository userRepo,  JwtService jwtService, @Lazy AuthenticationManager authenticationManager, ProductVariantRepository productVariantRepo, 
-    OrderRepository orderRepo, OrderItemRepository orderItemRepo, CouponRepository couponRepo, PaymentRepository paymentRepo,@Lazy PaymentService paymentService, @Lazy CouponService couponService) {
+    OrderRepository orderRepo, OrderItemRepository orderItemRepo, CouponRepository couponRepo, PaymentRepository paymentRepo,@Lazy PaymentService paymentService, @Lazy CouponService couponService, ProductRepository productRepo) {
         this.userRepo= userRepo;
         
         this.jwtService= jwtService;
@@ -71,6 +73,7 @@ public class UserService implements UserDetailsService {
         this.paymentRepo = paymentRepo;
         this.paymentService = paymentService;
         this.couponService= couponService;
+        this.productRepo = productRepo;
     }
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -297,6 +300,23 @@ public class UserService implements UserDetailsService {
         order.setUpdateAt(new Date()); 
         
         orderRepo.save(order);
+        if(order.getStatus()==EOrderStatus.SHIPPING) {
+            List<OrderItem> listOrderItems = order.getOrderItems();
+            List<Product> listProducts = new ArrayList<>();
+            List<ProductVariant> listProductVariants = new ArrayList<>();
+        for(OrderItem i:listOrderItems) {
+            ProductVariant pv = i.getProductVariant();
+            pv.setQuantity(pv.getQuantity()+i.getAmount());
+            Product p= pv.getProduct();
+            p.setQuantity(p.getQuantity()+i.getAmount());
+            
+            listProducts.add(p);
+            listProductVariants.add(pv);
+        }
+        productRepo.saveAll(listProducts);
+        productVariantRepo.saveAll(listProductVariants);
+        }
+        
         return order;
     }
 
@@ -336,6 +356,21 @@ public class UserService implements UserDetailsService {
         paymentRepo.save(payment);
         order.setStatus(EOrderStatus.RECEIVED);
         orderRepo.save(order);
+        List<OrderItem> listOrderItems = order.getOrderItems();
+         List<Product> listProducts = new ArrayList<>();
+        List<ProductVariant> listProductVariants = new ArrayList<>();
+        for(OrderItem i:listOrderItems) {
+            ProductVariant pv = i.getProductVariant();
+            pv.setQuantity(pv.getQuantity()-i.getAmount());
+            Product p= pv.getProduct();
+            p.setQuantity(p.getQuantity()-i.getAmount());
+            p.setSold(p.getSold()+i.getAmount());
+            listProducts.add(p);
+            listProductVariants.add(pv);
+        }
+        productRepo.saveAll(listProducts);
+        productVariantRepo.saveAll(listProductVariants);
+
         return order;
     }
 }
