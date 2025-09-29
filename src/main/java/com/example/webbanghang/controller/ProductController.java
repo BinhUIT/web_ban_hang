@@ -18,22 +18,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.webbanghang.model.entity.Coupon;
 import com.example.webbanghang.model.entity.Product;
 import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.esmodels.Products;
 import com.example.webbanghang.model.response.Response;
-import com.example.webbanghang.service.CouponService;
 import com.example.webbanghang.service.ProductService;
 
 
 @RestController
 public class ProductController {
     private ProductService productService;
-    private CouponService couponService;
-    public ProductController(ProductService productService, CouponService couponService) {
+    
+    public ProductController(ProductService productService) {
         this.productService= productService;
-        this.couponService = couponService;
+       
     }
     @GetMapping("/unsecure/product/{id}")
     public Product getProductById(@PathVariable int id) {
@@ -127,11 +125,7 @@ public class ProductController {
            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     } 
-    @GetMapping("/unsecure/get_enable_coupon") 
-    public List<Coupon> getAllEnableCoupons() {
-        
-        return couponService.getAllUsableCoupon();
-    }
+    
     @GetMapping("/unsecure/find_variant/{variantId}") 
     public ResponseEntity<Response> getProductVariantById(@PathVariable int variantId) {
         ProductVariant variant = productService.getVariantById(variantId);

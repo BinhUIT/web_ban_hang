@@ -36,9 +36,9 @@ import com.example.webbanghang.model.response.GetSizeAndColorResponse;
 import com.example.webbanghang.model.response.Response;
 import com.example.webbanghang.service.AdminService;
 import com.example.webbanghang.service.ColorService;
-import com.example.webbanghang.service.CouponService;
 import com.example.webbanghang.service.ProductService;
 import com.example.webbanghang.service.SizeService;
+import com.example.webbanghang.service.couponservice.CouponService;
 
 @RestController
 public class AdminController {

@@ -2,6 +2,7 @@ package com.example.webbanghang.model.entity;
 
 import java.util.Date;
 
+import com.example.webbanghang.exception.BadRequestException;
 import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EDiscountType;
 import com.example.webbanghang.model.request.CreateCouponRequest;
@@ -143,7 +144,7 @@ public class Coupon {
     }
     public Coupon(CreateCouponRequest request) throws Exception {
         if(request.getStartAt().after(request.getEndAt())) {
-            throw new Exception("400");
+            throw new BadRequestException("Invalid start and end time");
         }
         this.discountType= request.getDiscountType();
         this.createAt= new Date();
