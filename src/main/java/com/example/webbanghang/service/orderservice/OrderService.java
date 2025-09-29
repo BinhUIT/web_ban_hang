@@ -159,7 +159,8 @@ public class OrderService {
         paymentRepo.save(payment);
         order.setStatus(EOrderStatus.RECEIVED);
         orderRepo.save(order);
-        inventoryService.decreaseInventory(order.getOrderItems());
+        
+        inventoryService.increaseSold(order.getOrderItems());
         return order;
     }
     

@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.webbanghang.exception.BadRequestException;
+import com.example.webbanghang.exception.InternalServerErrorException;
 import com.example.webbanghang.exception.NotFoundException;
 import com.example.webbanghang.exception.UnauthorizedException;
 
@@ -17,7 +18,10 @@ public class ExceptionHandler {
             return new ResponseStatusException(HttpStatus.UNAUTHORIZED,message);
         }
         if(e instanceof BadRequestException) {
-            return new ResponseStatusException(HttpStatus.BAD_REQUEST);
+            return new ResponseStatusException(HttpStatus.BAD_REQUEST, message);
+        }
+        if(e instanceof InternalServerErrorException) {
+            return new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, message);
         }
         if(message.endsWith("not found")) {
             return new ResponseStatusException(HttpStatus.NOT_FOUND, message);

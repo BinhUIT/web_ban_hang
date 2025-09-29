@@ -44,13 +44,28 @@ public class InventoryService {
 
             Product p = pv.getProduct();
             p.setQuantity(p.getQuantity() - item.getAmount());
-            p.setSold(p.getSold() + item.getAmount());
+            
 
             products.add(p);
             variants.add(pv);
         }
         productRepo.saveAll(products);
         productVariantRepo.saveAll(variants);
+    }
+    public void increaseSold(List<OrderItem> items) {
+        List<Product> products = new ArrayList<>();
+        for (OrderItem item : items) {
+            ProductVariant pv = item.getProductVariant();
+            
+
+            Product p = pv.getProduct();
+            
+            p.setSold(p.getSold() + item.getAmount());
+
+            products.add(p);
+            
+        }
+        productRepo.saveAll(products);
     }
 
 
