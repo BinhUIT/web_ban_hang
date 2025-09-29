@@ -247,6 +247,8 @@ public class UserService implements UserDetailsService {
                 throw new Exception("400");
             }
             order.setCoupon(coupon);
+            coupon.setUsedTime(coupon.getUsedTime()+1);
+            couponRepo.save(coupon);
             if(coupon.getDiscountType()==EDiscountType.FIXED) {
                 order.setTotal(order.getOriginPrice()-coupon.getDiscount());
             }
