@@ -34,173 +34,36 @@ import com.example.webbanghang.model.response.CheckoutResponse;
 import com.example.webbanghang.model.response.CreateOrderResponse;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.model.response.Response;
-import com.example.webbanghang.service.CartService;
-import com.example.webbanghang.service.OAuth2Service;
+
 import com.example.webbanghang.service.UserService;
+import com.example.webbanghang.service.authservice.OAuth2Service;
+import com.example.webbanghang.service.cartservice.CartService;
+import com.example.webbanghang.service.orderservice.OrderService;
 
 @RestController
 public class UserController {
     private final UserService userService; 
     private final OAuth2Service oAuth2Service;
     private final CartService cartService;
-    public UserController(UserService userService, OAuth2Service oAuth2Service, CartService cartService) {
+    private final OrderService orderService;
+    public UserController(UserService userService, OAuth2Service oAuth2Service, CartService cartService, OrderService orderService) {
         this.userService= userService;
         this.oAuth2Service= oAuth2Service;
         this.cartService = cartService;
+        this.orderService= orderService;
     }
-    @GetMapping("/unsecure/test") 
-    public String test() {
-        return "Hello";
-    }
-    @GetMapping("/test/token") 
-    public String testWithToken() {
-        return "Success";
-    }
-    @GetMapping("/admin/test") 
-    public String testAdmin() {
-        return "Admin";
-    } 
-    @PostMapping("/unsecure/login") 
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        LoginResponse response = userService.login(request);
-        if(response==null) {
-            return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
-        } 
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-    @PostMapping("/unsecure/login_google") 
-    public ResponseEntity<LoginResponse> loginViaGoogle(@RequestBody Map<String,String> tokenJSON) {
-        String token = tokenJSON.get("token");
-        Map<String,Object> result = oAuth2Service.verifyGGTokenAndGenerateToken(token);
-        return getLoginResponseByResult(result);
-    }
-    @PutMapping("/unsecure/link_account") 
-    public ResponseEntity<LoginResponse> linkAccount(@RequestBody LinkAccountRequest request) {
-        Map<String,Object> result = oAuth2Service.linkAccount(request);
-        return getLoginResponseByResult(result);
-        
-    }
-    private ResponseEntity<LoginResponse> getLoginResponseByResult(Map<String,Object> result) {
-        Object result_code = result.get("Status code");
-        if(result_code instanceof Integer resultCode) {
-           if(resultCode!=200) {
-            return new ResponseEntity<>(null, HttpStatus.valueOf(resultCode));
-           }
-            Object response = result.get("Data");
-            if(response instanceof LoginResponse res) {
-                return new ResponseEntity<>(res, HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    @PostMapping("/user/add_to_cart") 
-    public CartItem addItemToCart(@RequestBody AddToCartRequest request, Authentication auth) {
-        String email = auth.getName();
-        try {
-            return userService.addToCart(request, email);
-        } catch (Exception e) {
-            String message = e.getMessage();
-            if(message.equals("404")) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Variant not found");
-            }
-            if(message.equals("400")) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Bad request");
-            }
-        }
-        return null;
-    }
-    @PutMapping("/user/update_cart") 
-    public CartItem updateCartItem(@RequestBody UpdateCartRequest request, Authentication auth) {
-        String email = auth.getName();
-        try {
-            return userService.updateCart(request, email);
-        }
-        catch (Exception e) {
-            String message = e.getMessage();
-            if(message.equals("404")) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Variant not found");
-        
-            }
-            if(message.equals("401")) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No permission");
-            }
-        }
-        return null;
-    }
-    @PutMapping("/user/update_many_cart_item") 
-    public List<CartItem> updateManyCartItem(@RequestBody List<UpdateCartRequest> requests, Authentication auth) {
-        String email = auth.getName();
-        try {
-            return userService.updateAllCartItem(requests, email);
-        }
-        catch (Exception e) {
-            String message = e.getMessage();
-            if(message.equals("404")) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Variant not found");
-        
-            }
-            if(message.equals("401")) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No permission");
-            }
-        }
-        return null;
-    }
-    @DeleteMapping("/user/delete_cart_item/{id}") 
-    public String deleteCartItem(@PathVariable int id, Authentication auth) {
-        String email = auth.getName();
-        try {
-            userService.deleteCartItem(id, email); 
-            return "Success";
-        } catch (Exception e) {
-            String message = e.getMessage();
-            if(message.equals("404")) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cart item not found");
-        
-            }
-            if(message.equals("401")) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"No permission");
-            }
-        }
-        return "Fail";
-    }
-    @DeleteMapping("/user/clear_cart")
-    public String clearCart(Authentication auth) {
-        String email = auth.getName();
-        try {
-            userService.clearCart(email);
-            return "Success";
-        } catch (Exception e) {
-            String message = e.getMessage();
-            if(message.equals("401")) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No permission");
-        
-            }
-        }
-        return "Fail";
-    }
-    @GetMapping("/user/cart") 
-    public Cart getUserCart(Authentication auth) {
-        String email= auth.getName();
-        return userService.getUserCart(email);
-    }
-    @PostMapping("/user/get_cart") 
-    public ResponseEntity<Response> getCart(@RequestBody CartData cartData) {
-        try {
-            Cart cart = userService.getCartFromMetaData(cartData);
-            return new ResponseEntity<>(new Response("Success",cart,200), HttpStatus.OK);
-        }
-        catch(Exception e) {
-            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
-            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
-        }
-    }
+    
+    
+    
+    
+    
     @PostMapping("/user/order") 
     public ResponseEntity<Response> order(Authentication auth, @RequestBody OrderRequest request) {
         String email = auth.getName();
         try {
             Cart cart = cartService.createCartFromMetaData(request.getCartData(), email);
             
-            CreateOrderResponse response = userService.orderFromCart(email, request.getSubInfo(), cart);
+            CreateOrderResponse response = orderService.orderFromCart(email, request.getSubInfo(), cart);
             return new ResponseEntity<>(new Response("Success",response,200), HttpStatus.OK);
         }
         catch (Exception e) {
@@ -213,7 +76,7 @@ public class UserController {
     public CheckoutResponse checkOut(Authentication auth, @PathVariable int orderId) {
         String email = auth.getName();
         try {
-            Order order = userService.getOrderById(email, orderId);
+            Order order = orderService.getOrderById(email, orderId);
             return null;
         }
         catch(Exception e) {
@@ -232,13 +95,13 @@ public class UserController {
     public Page<Order> getOrderHistory(Authentication auth, @RequestParam("page") int page, @RequestParam("size") int size) {
         Pageable pageable = PageRequest.of(page,size);
         String email= auth.getName();
-        return userService.getUserOrderHistory(email, pageable);
+        return orderService.getUserOrderHistory(email, pageable);
     }
     @GetMapping("/user/order-by-id/{id}") 
     public Order getOrderById(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
         try {
-            return userService.getOrderById(email, id);
+            return orderService.getOrderById(email, id);
         }
         catch(Exception e) {
             if(e.getMessage().equals("404")){
@@ -255,7 +118,7 @@ public class UserController {
     public Order cancelOrder(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
         try {
-            return userService.cancelOrder(email, id);
+            return orderService.cancelOrder(email, id);
         }
         catch(Exception e) {
             if(e.getMessage().equals("404")){
@@ -272,7 +135,7 @@ public class UserController {
     public String putMethodName(@RequestParam int orderId, @RequestParam String couponCode, Authentication auth) {
        String email = auth.getName();
        try {
-         Order order = userService.applyCoupon(orderId, couponCode, email);
+         Order order = orderService.applyCoupon(orderId, couponCode, email);
          return "Success";
        }
         catch(Exception e) {
@@ -293,7 +156,7 @@ public class UserController {
     public Order receivedOrder(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
         try {
-            return userService.receivedOrder(id, email);
+            return orderService.receivedOrder(id, email);
         } catch (Exception e) {
             if(e.getMessage().equals("404")){
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND);

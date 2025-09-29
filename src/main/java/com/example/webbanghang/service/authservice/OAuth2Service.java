@@ -1,4 +1,4 @@
-package com.example.webbanghang.service;
+package com.example.webbanghang.service.authservice;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +19,7 @@ import com.example.webbanghang.model.response.GoogleUserInfo;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.repository.RoleRepository;
 import com.example.webbanghang.repository.UserRepository;
+import com.example.webbanghang.service.JwtService;
 
 @Service
 public class OAuth2Service {  

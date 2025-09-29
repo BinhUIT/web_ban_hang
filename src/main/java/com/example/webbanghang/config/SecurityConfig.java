@@ -40,7 +40,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(httpSecurityCsrfConfigurer->httpSecurityCsrfConfigurer.disable()).cors(cors->cors.configurationSource(corsConfigurationSource()))
         .httpBasic(Customizer.withDefaults()) 
-        .authorizeHttpRequests(auth->auth.requestMatchers("/unsecure/**").permitAll()
+        .authorizeHttpRequests(auth->auth.requestMatchers("/unsecure/**","/auth/**").permitAll()
         .requestMatchers("/user/**").hasAnyAuthority("USER","ADMIN") 
         .requestMatchers("/admin/**").hasAnyAuthority("ADMIN")
         .requestMatchers("/shipper/**").hasAnyAuthority("SHIPPER")
