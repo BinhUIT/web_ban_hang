@@ -26,7 +26,7 @@ public class AssetController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(resource);
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
+            
            
             return ResponseEntity.internalServerError().body(null);
         }

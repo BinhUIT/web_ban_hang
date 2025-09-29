@@ -11,16 +11,9 @@ import com.example.webbanghang.repository.UserRepository;
 @Service
 public class UserService implements UserDetailsService {
     private final UserRepository userRepo;
-    
-    
-    
-   
     public UserService(UserRepository userRepo){
         this.userRepo= userRepo;
     }
-        
-        
-        
     
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

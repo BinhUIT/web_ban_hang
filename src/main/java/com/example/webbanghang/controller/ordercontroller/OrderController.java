@@ -54,7 +54,7 @@ public class OrderController {
         String email= auth.getName();
         return orderService.getUserOrderHistory(email, pageable);
     }
-    @GetMapping("/user/order-by-id/{id}") 
+    @GetMapping("/order-by-id/{id}") 
     public ResponseEntity<Response> getOrderById(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
         try {
@@ -80,7 +80,7 @@ public class OrderController {
             return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
         }
     }
-    @PutMapping("/user/received_order/{id}") 
+    @PutMapping("/received_order/{id}") 
     public ResponseEntity<Response> receivedOrder(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
         try {
