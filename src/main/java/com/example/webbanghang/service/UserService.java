@@ -237,9 +237,9 @@ public class UserService implements UserDetailsService {
            productVariantRepo.save(productVariant);
            
         }
-        
+        order.setOrderItems(listOrderItem);
         order.setShipping_fee(Constants.shippingFee);
-        order.setOriginPrice(productMoney+shippingFee); 
+        order.setOriginPrice(productMoney+Constants.shippingFee); 
         if(subInfo.getCouponCode()!=null&&!subInfo.getCouponCode().equals("")) {
             CheckCouponResponse checkCoupon = couponService.checkCoupon(subInfo.getCouponCode(), productMoney);
             Coupon coupon = checkCoupon.getCoupon();
@@ -256,7 +256,7 @@ public class UserService implements UserDetailsService {
 
         }
         else {
-            order.setTotal(productMoney+shippingFee);
+            order.setTotal(productMoney+Constants.shippingFee);
         }
         
         orderRepo.save(order);

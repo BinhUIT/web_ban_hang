@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EPaymentType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -45,6 +46,7 @@ public class Payment  {
     public void setId(int id) {
         this.id = id;
     }
+    @JsonIgnore
     public Order getOrder() {
         return order;
     }

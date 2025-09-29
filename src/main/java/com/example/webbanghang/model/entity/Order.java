@@ -7,7 +7,6 @@ import com.example.webbanghang.middleware.UUIDGenerator;
 import com.example.webbanghang.model.enums.EDiscountType;
 import com.example.webbanghang.model.enums.EOrderStatus;
 import com.example.webbanghang.model.enums.EPaymentType;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -117,7 +116,7 @@ public class Order {
     public boolean getIsCreatePayment() {
         return this.payment!=null;
     }
-    @JsonIgnore
+    
     public Payment getPayment() {
         return this.payment;
     }
