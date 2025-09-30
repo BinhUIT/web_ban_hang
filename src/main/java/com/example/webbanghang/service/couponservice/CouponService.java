@@ -14,7 +14,7 @@ public class CouponService {
     public CouponService(CouponRepository couponRepo) {
         this.couponRepo = couponRepo;
     } 
-    public Coupon validateCoupon(String code, float orderValue) {
+    public Coupon validateCoupon(String code, float orderValue) throws RuntimeException {
         Coupon coupon = couponRepo.findFirstByCode(code);
         if (coupon == null) {
             throw new BadRequestException("Invalid coupon code");

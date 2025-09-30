@@ -57,40 +57,25 @@ public class OrderController {
     @GetMapping("/order-by-id/{id}") 
     public ResponseEntity<Response> getOrderById(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
-        try {
-            Order order = orderService.getOrderById(email, id);
-            Response response = new Response("Success", order,200);
-            return new ResponseEntity<>(response,HttpStatus.OK);
-        }
-        catch(Exception e) {
-            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
-            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
-        }
+        Order order = orderService.getOrderById(email, id);
+        Response response = new Response("Success", order,200);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+        
     }
     @PutMapping("/cancel-order/{id}") 
     public ResponseEntity<Response> cancelOrder(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
-        try {
-            Order order= orderService.cancelOrder(email, id);
-            Response response = new Response("Success", order,200);
-            return new ResponseEntity<>(response,HttpStatus.OK);
-        }
-        catch(Exception e) {
-            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
-            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
-        }
+        Order order= orderService.cancelOrder(email, id);
+        Response response = new Response("Success", order,200);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
     @PutMapping("/received_order/{id}") 
     public ResponseEntity<Response> receivedOrder(Authentication auth, @PathVariable int id) {
         String email = auth.getName();
-        try {
-            Order order =orderService.receivedOrder(id, email);
-             Response response = new Response("Success", order,200);
-            return new ResponseEntity<>(response,HttpStatus.OK);
-        } catch (Exception e) {
-            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
-            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
-        }
+        Order order =orderService.receivedOrder(id, email);
+        Response response = new Response("Success", order,200);
+        return new ResponseEntity<>(response,HttpStatus.OK);
+        
     }
 
 }

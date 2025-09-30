@@ -28,7 +28,7 @@ public class CartService {
         this.productVariantRepo = productVariantRepo;
         this.userService = userService;
     }
-    public Cart getCartFromMetaData(CartData cartData) throws Exception {
+    public Cart getCartFromMetaData(CartData cartData) throws RuntimeException{
         User user = this.userRepo.findById(cartData.getUserId()).orElse(null);
         if(user==null) {
             throw new NotFoundException("User not found");
@@ -53,7 +53,7 @@ public class CartService {
         }
         return cart;
     }
-    public Cart createCartFromMetaData(CartData data, String email) throws Exception {
+    public Cart createCartFromMetaData(CartData data, String email) throws RuntimeException {
         User user = (User) userService.loadUserByUsername(email);
         if(user.getId()!=data.getUserId()) {
             throw new UnauthorizedException("Unauthorized");

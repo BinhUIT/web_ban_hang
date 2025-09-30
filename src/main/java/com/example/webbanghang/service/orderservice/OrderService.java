@@ -84,7 +84,7 @@ public class OrderService {
         productVariantRepo.saveAll(listVariants);
         return productMoney;
     }
-    private void applyCouponIfNeed(Order order, OrderSubInfo subInfo, float productMoney) throws Exception {
+    private void applyCouponIfNeed(Order order, OrderSubInfo subInfo, float productMoney) throws RuntimeException{
         if(subInfo.getCouponCode()!=null&&!subInfo.getCouponCode().equals("")) {
             Coupon coupon = couponService.validateCoupon(subInfo.getCouponCode(), productMoney);
             order.setCoupon(coupon);
@@ -108,7 +108,7 @@ public class OrderService {
             User user =(User) userService.loadUserByUsername(email);
             return orderRepo.findByUser_IdOrderByCreateAtDesc(user.getId(), pageable);
     }
-    public Order getOrderById(String email, int id) throws Exception {
+    public Order getOrderById(String email, int id) throws RuntimeException{
         User user = (User) userService.loadUserByUsername(email);
         Order order = orderRepo.findById(id).orElse(null);
         if(order==null) {
@@ -120,7 +120,7 @@ public class OrderService {
         return order;
     }
     @Transactional
-    public Order cancelOrder(String email, int id) throws Exception {
+    public Order cancelOrder(String email, int id) throws RuntimeException{
         User user = (User) userService.loadUserByUsername(email);
         Order order = orderRepo.findById(id).orElse(null);
         if(order==null) {
@@ -145,7 +145,7 @@ public class OrderService {
    
     
     @Transactional
-    public Order receivedOrder(int orderId, String email) throws Exception {
+    public Order receivedOrder(int orderId, String email) throws RuntimeException{
         User user = (User) userService.loadUserByUsername(email);
         Order order = orderRepo.findById(orderId).orElse(null);
         if(order==null) {

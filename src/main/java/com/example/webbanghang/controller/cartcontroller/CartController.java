@@ -22,14 +22,11 @@ public class CartController {
     }
     @PostMapping("/user/get_cart") 
     public ResponseEntity<Response> getCart(@RequestBody CartData cartData) {
-        try {
-            Cart cart = cartService.getCartFromMetaData(cartData);
-            return new ResponseEntity<>(new Response("Success",cart,200), HttpStatus.OK);
-        }
-        catch(Exception e) {
-            ResponseStatusException ex=ExceptionHandler.getResponseStatusException(e);
-            return new ResponseEntity<>(new Response(ex.getMessage(),null,ex.getStatusCode().value()), HttpStatusCode.valueOf(ex.getStatusCode().value()));
-        }
+       
+        Cart cart = cartService.getCartFromMetaData(cartData);
+        return new ResponseEntity<>(new Response("Success",cart,200), HttpStatus.OK);
+        
+        
     }
     
 }
