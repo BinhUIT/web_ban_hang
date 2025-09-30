@@ -34,7 +34,7 @@ public class AuthService {
         if(auth.isAuthenticated()) {
             Object userPrincipal = auth.getPrincipal();
             if(userPrincipal instanceof User user) {
-                return new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime*60*1000));
+                return new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime*60*1000), jwtService.generateRefreshToken(user.getEmail()));
             }
             return null;
         }

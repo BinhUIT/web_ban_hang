@@ -52,7 +52,7 @@ public class OAuth2Service {
                     return res;
                 } 
                 res.put("Status code",200);
-                LoginResponse loginResponse = new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime+60*1000));
+                LoginResponse loginResponse = new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime+60*1000), jwtService.generateRefreshToken(user.getEmail()));
                 res.put("Data",loginResponse);
                 return res;
             }
@@ -60,7 +60,7 @@ public class OAuth2Service {
             user = new User(ggUserInfo, role);
             userRepo.save(user); 
             res.put("Status code",200);
-            LoginResponse loginResponse = new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime+60*1000));
+            LoginResponse loginResponse = new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime+60*1000), jwtService.generateRefreshToken(user.getEmail()));
             res.put("Data",loginResponse);
             return res;
         }
@@ -92,7 +92,7 @@ public class OAuth2Service {
             user.setUpdateAt(new Date());
             userRepo.save(user);
              res.put("Status code",200);
-            LoginResponse loginResponse = new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime+60*1000));
+            LoginResponse loginResponse = new LoginResponse(user, jwtService.generateToken(user.getEmail()), new Date(System.currentTimeMillis()+Constants.tokenExpireTime+60*1000), jwtService.generateRefreshToken(user.getEmail()));
             res.put("Data",loginResponse);
             return res;
         } 

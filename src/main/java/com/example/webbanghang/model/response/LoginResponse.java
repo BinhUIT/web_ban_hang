@@ -8,6 +8,7 @@ public class LoginResponse {
     private User user;
     private String token;
     private Date tokenExpireAt;
+    private String refreshToken;
     public User getUser() {
         return user;
     }
@@ -28,10 +29,18 @@ public class LoginResponse {
     }
     public LoginResponse() {
     }
-    public LoginResponse(User user, String token, Date tokenExpireAt) {
+    public LoginResponse(User user, String token, Date tokenExpireAt, String refreshToken) {
         this.user = user;
         this.token = token;
         this.tokenExpireAt = tokenExpireAt;
+        this.refreshToken = refreshToken;
     }
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    } 
+    
     
 }
