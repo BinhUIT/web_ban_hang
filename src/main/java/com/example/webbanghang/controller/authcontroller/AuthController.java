@@ -4,16 +4,17 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.response.LoginResponse;
-import com.example.webbanghang.model.response.Response;
 import com.example.webbanghang.service.authservice.AuthService;
 import com.example.webbanghang.service.authservice.OAuth2Service;
 
@@ -59,5 +60,12 @@ public class AuthController {
             }
         }
         return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @DeleteMapping("/logout") 
+    public String logout(@RequestParam(defaultValue="") String token) {
+        if(!token.equals("")) {
+            authService.logout(token);
+        }
+        return "Success";
     }
 }

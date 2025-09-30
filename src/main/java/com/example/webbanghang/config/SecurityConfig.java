@@ -25,9 +25,11 @@ import com.example.webbanghang.service.UserService;
 public class SecurityConfig {
     private final UserService userService;
     private final JwtAuthFilter jwtAuthFilter;
-    public SecurityConfig(UserService userService, JwtAuthFilter jwtAuthFilter) {
+    private final TokenBlackListFilter tokenBlackListFilter;
+    public SecurityConfig(UserService userService, JwtAuthFilter jwtAuthFilter, TokenBlackListFilter tokenBlackListFilter) {
         this.userService= userService;
         this.jwtAuthFilter = jwtAuthFilter;
+        this.tokenBlackListFilter = tokenBlackListFilter;
     } 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -48,6 +50,7 @@ public class SecurityConfig {
         )
         .formLogin(Customizer.withDefaults());
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(tokenBlackListFilter, JwtAuthFilter.class);
         return http.build();
     }
     @Bean
