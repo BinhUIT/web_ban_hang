@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import com.example.webbanghang.exception.BadRequestException;
 import com.example.webbanghang.exception.NotFoundException;
@@ -16,7 +17,7 @@ import com.example.webbanghang.model.enums.EOrderStatus;
 import com.example.webbanghang.repository.OrderRepository;
 import com.example.webbanghang.service.orderservice.InventoryService;
 
-
+@Service
 public class AdminOrderService {
     private final OrderRepository orderRepo;
     private final InventoryService inventoryService;
@@ -29,7 +30,7 @@ public class AdminOrderService {
         Pageable pageable = PageRequest.of(number,size,Sort.by(Sort.Direction.DESC,"createAt"));
         return orderRepo.findAll(pageable);
     }
-    public void cancelOrder(int orderId) throws Exception {
+    public void cancelOrder(int orderId) throws RuntimeException {
         Order order = orderRepo.findById(orderId).orElse(null);
         if(order==null) {
             throw new NotFoundException("Order with id "+orderId+" not found");
@@ -43,7 +44,7 @@ public class AdminOrderService {
         inventoryService.restoreInventory(listOrderItems);
         orderRepo.save(order);
     }
-    public void shipOrder(int orderId) throws Exception {
+    public void shipOrder(int orderId) throws RuntimeException {
          Order order = orderRepo.findById(orderId).orElse(null);
         if(order==null) {
            throw new NotFoundException("Order with id "+orderId+" not found");

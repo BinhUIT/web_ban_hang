@@ -36,7 +36,7 @@ public class CouponService {
         coupon.setUsedTime(coupon.getUsedTime() + 1);
         couponRepo.save(coupon);
     }
-    public Coupon createCoupon(CreateCouponRequest request) throws Exception {
+    public Coupon createCoupon(CreateCouponRequest request) throws RuntimeException{
         Coupon coupon = new Coupon(request);
         return couponRepo.save(coupon);
     }

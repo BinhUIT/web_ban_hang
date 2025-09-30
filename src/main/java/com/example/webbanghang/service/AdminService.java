@@ -36,6 +36,8 @@ import com.example.webbanghang.repository.ProductRepository;
 import com.example.webbanghang.repository.ProductSizeRepository;
 import com.example.webbanghang.repository.ProductVariantRepository;
 import com.example.webbanghang.repository.UserRepository;
+import com.example.webbanghang.service.productservice.ProductService;
+import com.example.webbanghang.service.productservice.ProductVariantService;
 
 import io.jsonwebtoken.io.IOException;
 
@@ -51,10 +53,10 @@ public class AdminService {
     private final ProductSizeRepository productSizeRepo;
     private final ProductVariantRepository productVariantRepo;
     private final OrderItemRepository orderItemRepo;
-    
+    private final ProductVariantService productVariantService;
     public AdminService(OrderRepository orderRepo, PaymentRepository paymentRepo, UserRepository userRepo, CategoryRepository categoryRepo, ProductRepository productRepo,
-    ProductService productService, ProductColorRepository productColorRepo, ProductSizeRepository productSizeRepo, ProductVariantRepository productVariantRepo, OrderItemRepository orderItemRepo
-    ) {
+    ProductService productService, ProductColorRepository productColorRepo, ProductSizeRepository productSizeRepo, ProductVariantRepository productVariantRepo, OrderItemRepository orderItemRepo,
+    ProductVariantService productVariantService) {
         this.orderRepo = orderRepo;
         this.paymentRepo= paymentRepo;
         this.userRepo = userRepo;
@@ -65,7 +67,7 @@ public class AdminService {
         this.productSizeRepo= productSizeRepo;
         this.productVariantRepo = productVariantRepo;
         this.orderItemRepo = orderItemRepo;
-        
+        this.productVariantService = productVariantService;
     } 
     public Page<Order> findAllOrder(int size, int number) {
         Pageable pageable = PageRequest.of(number,size,Sort.by(Sort.Direction.DESC,"createAt"));
@@ -197,7 +199,7 @@ public class AdminService {
         if(productSize==null) {
             throw new Exception("Size not found");
         }
-        if(productService.isVariantExist(request.getColorId(), request.getSizeId(), product)) {
+        if(productVariantService.isVariantExist(request.getColorId(), request.getSizeId(), product)) {
             throw new Exception("Variant exists");
         }
         

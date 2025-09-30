@@ -77,7 +77,7 @@ public class AdminProductService {
         productRepo.save(product);
         return product;
     }
-    public void deleteProduct(int productId) throws Exception {
+    public void deleteProduct(int productId) throws RuntimeException {
         Product product = productRepo.findById(productId).orElse(null);
         if(product==null) {
             throw new NotFoundException("Product not found");

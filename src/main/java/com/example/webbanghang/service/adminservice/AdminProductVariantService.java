@@ -106,7 +106,7 @@ public class AdminProductVariantService {
     productRepo.save(product);
     return productVariantRepo.save(productVariant);
 }
-public void deleteProductVariant(int productVariantId) throws Exception {
+public void deleteProductVariant(int productVariantId) throws RuntimeException {
         ProductVariant productVariant = productVariantRepo.findById(productVariantId).orElse(null);
         if(productVariant==null) {
             throw new NotFoundException("Product variant not found");

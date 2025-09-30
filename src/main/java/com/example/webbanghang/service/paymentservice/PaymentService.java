@@ -3,6 +3,8 @@ package com.example.webbanghang.service.paymentservice;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.example.webbanghang.model.entity.Order;
 import com.example.webbanghang.model.entity.OrderItem;
 import com.example.webbanghang.model.entity.Payment;
@@ -15,7 +17,7 @@ import vn.payos.PayOS;
 import vn.payos.type.CheckoutResponseData;
 import vn.payos.type.ItemData;
 import vn.payos.type.PaymentData;
-
+@Service
 public class PaymentService {
     private PaymentRepository paymentRepo;
     private OrderRepository orderRepo;

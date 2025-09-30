@@ -142,7 +142,7 @@ public class Coupon {
     public void setCode(String code) {
         this.code = code;
     }
-    public Coupon(CreateCouponRequest request) throws Exception {
+    public Coupon(CreateCouponRequest request) throws RuntimeException {
         if(request.getStartAt().after(request.getEndAt())) {
             throw new BadRequestException("Invalid start and end time");
         }

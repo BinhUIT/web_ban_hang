@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.webbanghang.service.PaymentService;
+import com.example.webbanghang.service.paymentservice.PaymentService;
 
 
 @RestController
@@ -20,7 +20,7 @@ public class PaymentController {
     public PaymentController(PaymentService paymentService) {
         this.paymentService = paymentService;
     } 
-    @PostMapping("/user/confirm_checkout_online/{orderId}")
+    /*@PostMapping("/user/confirm_checkout_online/{orderId}")
     public String getPayURL(Authentication auth, @PathVariable int orderId) {
         String email = auth.getName();
         try {
@@ -104,6 +104,6 @@ public class PaymentController {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
+    }*/
     
 }
