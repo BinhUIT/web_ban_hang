@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
 import com.example.webbanghang.model.request.RegisterRequest;
+import com.example.webbanghang.model.response.CreateNewAcessTokenResponse;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.model.response.RegisterResponse;
 import com.example.webbanghang.model.response.Response;
@@ -82,7 +83,7 @@ public class AuthController {
 
     @GetMapping("/get_new_access_token") 
     public ResponseEntity<Response> getNewAccessToken(@RequestParam(defaultValue="") String refreshToken) {
-        String newAcessToken = jwtService.createNewAcessToken(refreshToken);
+        CreateNewAcessTokenResponse newAcessToken = jwtService.createNewAcessToken(refreshToken);
         Response response = new Response("Success", newAcessToken, 200);
         return new ResponseEntity(response, HttpStatus.OK);
     }

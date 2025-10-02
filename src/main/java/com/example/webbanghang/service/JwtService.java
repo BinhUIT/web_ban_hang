@@ -14,6 +14,7 @@ import com.example.webbanghang.middleware.Constants;
 import com.example.webbanghang.model.entity.RefreshToken;
 import com.example.webbanghang.model.entity.Token;
 import com.example.webbanghang.model.entity.User;
+import com.example.webbanghang.model.response.CreateNewAcessTokenResponse;
 import com.example.webbanghang.repository.RefreshTokenRepository;
 import com.example.webbanghang.repository.TokenRepository;
 import com.example.webbanghang.repository.UserRepository;
@@ -129,7 +130,7 @@ public class JwtService {
         refreshTokenRepo.delete(rfToken);
     }
 
-    public String createNewAcessToken(String refreshToken) {
+    public CreateNewAcessTokenResponse createNewAcessToken(String refreshToken) {
         String email = extractEmail(refreshToken);
         UserDetails userDetails = userRepo.findByEmail(email);
         
@@ -137,7 +138,8 @@ public class JwtService {
             System.out.println("Invalid refresh token");
             throw new UnauthorizedException("Invalid refresh token");
         }
-        return generateToken(email);
+        String newAcessToken= generateToken(email);
+        return new CreateNewAcessTokenResponse(newAcessToken, extractExpiredDate(newAcessToken));
     
     
     }
