@@ -9,10 +9,13 @@ import java.util.function.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.example.webbanghang.exception.UnauthorizedException;
 import com.example.webbanghang.middleware.Constants;
 import com.example.webbanghang.model.entity.RefreshToken;
+import com.example.webbanghang.model.entity.Token;
 import com.example.webbanghang.model.entity.User;
 import com.example.webbanghang.repository.RefreshTokenRepository;
+import com.example.webbanghang.repository.TokenRepository;
 import com.example.webbanghang.repository.UserRepository;
 
 import io.github.cdimascio.dotenv.Dotenv;
@@ -21,15 +24,18 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.transaction.Transactional;
 
 @Component
 public class JwtService {
     public static final String secret = Dotenv.load().get("SECRET_KEY");
     private final UserRepository userRepo; 
     private final RefreshTokenRepository refreshTokenRepo;
-    public JwtService(UserRepository userRepo, RefreshTokenRepository refreshTokenRepo) {
+    private final TokenRepository tokenRepo;
+    public JwtService(UserRepository userRepo, RefreshTokenRepository refreshTokenRepo, TokenRepository tokenRepo) {
         this.userRepo= userRepo;
         this.refreshTokenRepo = refreshTokenRepo;
+        this.tokenRepo = tokenRepo;
     } 
      private Key getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
@@ -66,11 +72,23 @@ public class JwtService {
         return extractExpiredDate(token).before(new Date());
     }
     public boolean validateToken(String token,UserDetails userDetails) {
+        if(!isAccessToken(token)) {
+            return false;
+        }
         if(userDetails instanceof User user) {
             String emailFromToken= extractEmail(token);
             return emailFromToken.equals(user.getEmail())&&!isTokenExpire(token);
         } 
         return false;
+    }
+    public Date extractIssueDate(String token) {
+        return extractClaim(token, Claims::getIssuedAt);
+    }
+    public boolean isAccessToken(String token) {
+        Date createAt = extractIssueDate(token);
+        Date expireAt = extractExpiredDate(token);
+        long ttl = expireAt.getTime()-createAt.getTime();
+        return ttl<1000 * 60 * Constants.refreshTokenExpireTime;
     }
     public boolean validateRefreshToken(String token , UserDetails userDetails) {
         RefreshToken refreshToken = refreshTokenRepo.findByToken(token);
@@ -79,7 +97,10 @@ public class JwtService {
         } 
         boolean isValid = validateToken(token, userDetails);
         if(!isValid) {
-            refreshTokenRepo.delete(refreshToken);
+             if(userDetails instanceof User user) {
+            String emailFromToken= extractEmail(token);
+            return emailFromToken.equals(user.getEmail())&&!isTokenExpire(token);
+        } 
         }
         return isValid;
     }
@@ -97,5 +118,27 @@ public class JwtService {
     public User findUserByToken(String token) {
         String email = extractEmail(token);
         return userRepo.findByEmail(email);
+    }
+    @Transactional
+    public void handleLogout(String acessToken, String refreshToken)  {
+        Token accessToken = new Token();
+        accessToken.setAddAt(new Date());
+        accessToken.setToken(acessToken);
+        tokenRepo.save(accessToken);
+        RefreshToken rfToken = refreshTokenRepo.findByToken(refreshToken);
+        refreshTokenRepo.delete(rfToken);
+    }
+
+    public String createNewAcessToken(String refreshToken) {
+        String email = extractEmail(refreshToken);
+        UserDetails userDetails = userRepo.findByEmail(email);
+        
+        if(!validateRefreshToken(refreshToken, userDetails)) {
+            System.out.println("Invalid refresh token");
+            throw new UnauthorizedException("Invalid refresh token");
+        }
+        return generateToken(email);
+    
+    
     }
 }

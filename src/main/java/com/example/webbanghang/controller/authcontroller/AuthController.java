@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import com.example.webbanghang.model.request.RegisterRequest;
 import com.example.webbanghang.model.response.LoginResponse;
 import com.example.webbanghang.model.response.RegisterResponse;
 import com.example.webbanghang.model.response.Response;
+import com.example.webbanghang.service.JwtService;
 import com.example.webbanghang.service.authservice.AuthService;
 import com.example.webbanghang.service.authservice.OAuth2Service;
 
@@ -27,9 +29,11 @@ import com.example.webbanghang.service.authservice.OAuth2Service;
 public class AuthController {
     private final AuthService authService;
     private final OAuth2Service oAuth2Service;
-    public AuthController(AuthService authService, OAuth2Service oAuth2Service) {
+    private final JwtService jwtService;
+    public AuthController(AuthService authService, OAuth2Service oAuth2Service, JwtService jwtService) {
         this.authService= authService;
         this.oAuth2Service = oAuth2Service;
+        this.jwtService= jwtService;
     } 
     @PostMapping("/login") 
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
@@ -71,11 +75,16 @@ public class AuthController {
         return new ResponseEntity<>(null,HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @DeleteMapping("/logout") 
-    public String logout(@RequestParam(defaultValue="") String token) {
-        if(!token.equals("")) {
-            authService.logout(token);
-        }
+    public String logout(@RequestParam(defaultValue="") String accessToken, @RequestParam(defaultValue="") String refreshToken) {
+        jwtService.handleLogout(accessToken, refreshToken);
         return "Success";
+    }
+
+    @GetMapping("/get_new_access_token") 
+    public ResponseEntity<Response> getNewAccessToken(@RequestParam(defaultValue="") String refreshToken) {
+        String newAcessToken = jwtService.createNewAcessToken(refreshToken);
+        Response response = new Response("Success", newAcessToken, 200);
+        return new ResponseEntity(response, HttpStatus.OK);
     }
    
 }
