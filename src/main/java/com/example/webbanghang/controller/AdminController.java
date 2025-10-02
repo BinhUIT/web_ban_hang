@@ -179,7 +179,7 @@ public class AdminController {
         return new GetSizeAndColorResponse(sizeService.getAll(),colorService.getAllColors());
     }
     @GetMapping("/admin/get_statistic") 
-    public ResponseEntity<Response> getStatisticData(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date from, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date to) {
+    public ResponseEntity<Response> getStatisticData(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date from, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date to) {
         CompositeStatisticModel result = adminStatisticService.getStatisticBy(from, to);
         Response response = new Response("Success",result,200);
         return new ResponseEntity<>(response, HttpStatus.OK);

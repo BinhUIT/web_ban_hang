@@ -39,9 +39,12 @@ public class AdminStatisticService {
             for(OrderItem item: i.getOrderItems()) {
                 String catName = item.getProductVariant().getProduct().getCategory().getName();
                 String productName = item.getProductVariant().getProduct().getName();
+                res.setTotalIncome(res.getTotalIncome()+item.getTotalPrice());
                 putDataToMap(res.getStatisticByCategory(), catName, item);
                 putDataToMap(res.getStatisticByProduct(), productName, item);
             }
+            res.setTotalIncome(res.getTotalIncome()-i.getDiscount());
+            res.setTotalOrders(res.getTotalOrders()+1);
         }
         return res;
     }
