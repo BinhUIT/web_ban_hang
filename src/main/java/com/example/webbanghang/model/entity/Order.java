@@ -31,6 +31,7 @@ public class Order {
     private User user;
     private Date createAt;
     private Date updateAt;
+    private Date payAt;
     private EOrderStatus status;
     private float shipping_fee;
     private float total;
@@ -83,7 +84,7 @@ public class Order {
        this.total = this.getOriginPrice()-this.getDiscount();
     }
     public Order(int id, User user, Date createAt, Date updateAt, EOrderStatus status, float shipping_fee, float total,
-            List<OrderItem> orderItems,String email, String address, String phone, Payment payment, Long paymentCode, String code, Coupon coupon, float originPrice ) {
+            List<OrderItem> orderItems,String email, String address, String phone, Payment payment, Long paymentCode, String code, Coupon coupon, float originPrice, Date payAt ) {
         this.id = id;
         this.user = user;
         this.createAt = createAt;
@@ -99,6 +100,7 @@ public class Order {
         this.paymentCode = paymentCode;
         this.code = code;
         this.originPrice = originPrice;
+        this.payAt= payAt;
     }
     
     public Order(User user, String address, String phone) {
@@ -210,6 +212,12 @@ public class Order {
 
     public void setPaymentCode(Long paymentCode) {
         this.paymentCode = paymentCode;
+    }
+    public Date getPayAt() {
+        return this.payAt;
+    } 
+    public void setPayAt(Date payAt) {
+        this.payAt= payAt;
     }
     
 

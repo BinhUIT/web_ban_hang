@@ -1,11 +1,13 @@
 package com.example.webbanghang.controller;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -32,15 +34,15 @@ import com.example.webbanghang.model.request.CreateProductRequest;
 import com.example.webbanghang.model.request.CreateProductVariantRequest;
 import com.example.webbanghang.model.request.UpdateProductRequest;
 import com.example.webbanghang.model.request.UpdateProductVariantRequest;
+import com.example.webbanghang.model.response.CompositeStatisticModel;
 import com.example.webbanghang.model.response.GetSizeAndColorResponse;
 import com.example.webbanghang.model.response.Response;
-
 import com.example.webbanghang.service.ColorService;
-
 import com.example.webbanghang.service.SizeService;
 import com.example.webbanghang.service.adminservice.AdminOrderService;
 import com.example.webbanghang.service.adminservice.AdminProductService;
 import com.example.webbanghang.service.adminservice.AdminProductVariantService;
+import com.example.webbanghang.service.adminservice.AdminStatisticService;
 import com.example.webbanghang.service.adminservice.AdminUserService;
 import com.example.webbanghang.service.couponservice.CouponService;
 import com.example.webbanghang.service.productservice.ProductService;
@@ -56,8 +58,9 @@ public class AdminController {
     private final ProductService productService;
     private final ColorService colorService;
     private final SizeService sizeService;
+    private final AdminStatisticService adminStatisticService;
     public AdminController(AdminOrderService adminOrderService, AdminProductService adminProductService, AdminProductVariantService adminProductVariantService, AdminUserService adminUserService, CouponService couponService,
-    ProductService productService, ColorService colorService, SizeService sizeService){
+    ProductService productService, ColorService colorService, SizeService sizeService, AdminStatisticService adminStatisticService){
         this.adminOrderService = adminOrderService;
         this.adminProductService = adminProductService;
         this.adminProductVariantService= adminProductVariantService;
@@ -66,6 +69,7 @@ public class AdminController {
         this.productService= productService;
         this.colorService= colorService;
         this.sizeService= sizeService;
+        this.adminStatisticService = adminStatisticService;
     }
     @GetMapping("/admin/get_orders") 
     public Page<Order> getOrders(@RequestParam int size, @RequestParam int page) {
@@ -173,5 +177,11 @@ public class AdminController {
     @GetMapping("/unsecure/sizes_colors") 
     public GetSizeAndColorResponse getSizeAndColor() {
         return new GetSizeAndColorResponse(sizeService.getAll(),colorService.getAllColors());
+    }
+    @GetMapping("/admin/get_statistic") 
+    public ResponseEntity<Response> getStatisticData(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date from, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") Date to) {
+        CompositeStatisticModel result = adminStatisticService.getStatisticBy(from, to);
+        Response response = new Response("Success",result,200);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -155,6 +155,9 @@ public class OrderService {
             throw new BadRequestException("You can not cancel this order");
         } 
         Payment payment = order.getPayment();
+        if(payment.getPaymentType()==EPaymentType.COD) {
+            order.setPayAt(new Date());
+        }
         payment.setStatus("Success"); 
         paymentRepo.save(payment);
         order.setStatus(EOrderStatus.RECEIVED);

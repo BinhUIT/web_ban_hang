@@ -1,6 +1,7 @@
 package com.example.webbanghang.service.paymentservice;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class PaymentService {
         payment.setStatus("SUCCESS");
         paymentRepo.save(payment);
     }
+
     public String createPaymentLink(Order order)  throws Exception {
         Dotenv dotenv = Dotenv.load();
         String clientId = dotenv.get("PAYOS_CLIENT_ID");
@@ -47,6 +49,7 @@ public class PaymentService {
         long currentTimeMillis= System.currentTimeMillis();
         PaymentData paymentData = PaymentData.builder().orderCode(currentTimeMillis).amount((int)order.getTotal()).items(items).returnUrl("http://localhost:8080/unsecure/check_out_success").cancelUrl("http://localhost:8080/unsecure/check_out_cancel").description("Checkout "+order.getId()).build();
         order.setPaymentCode(currentTimeMillis);
+        order.setPayAt(new Date());
         orderRepo.save(order);
         CheckoutResponseData responseData= payOS.createPaymentLink(paymentData);
         return responseData.getCheckoutUrl();
