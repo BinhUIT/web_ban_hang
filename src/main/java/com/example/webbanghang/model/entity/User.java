@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.webbanghang.model.enums.EAuthProvider;
+import com.example.webbanghang.model.request.RegisterRequest;
 import com.example.webbanghang.model.response.GoogleUserInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -168,6 +169,19 @@ public class User implements UserDetails {
     @Override
     public boolean isAccountNonLocked() {
         return this.isActive;
+    }
+    public User(RegisterRequest request, String password,Role role) {
+        this.name= request.getName();
+        this.password = password;
+        this.email= request.getEmail();
+        this.phone= request.getPhone();
+        this.address= request.getAddress();
+        this.createAt= new Date();
+        this.isActive=true;
+        this.role=role;
+        this.updateAt= null;
+        this.cart=null;
+        this.authProvider=EAuthProvider.DEFAULT;
     }
     
 }

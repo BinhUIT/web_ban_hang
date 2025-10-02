@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.webbanghang.model.request.LinkAccountRequest;
 import com.example.webbanghang.model.request.LoginRequest;
+import com.example.webbanghang.model.request.RegisterRequest;
 import com.example.webbanghang.model.response.LoginResponse;
+import com.example.webbanghang.model.response.RegisterResponse;
+import com.example.webbanghang.model.response.Response;
 import com.example.webbanghang.service.authservice.AuthService;
 import com.example.webbanghang.service.authservice.OAuth2Service;
 
@@ -34,6 +37,12 @@ public class AuthController {
         if(response==null) {
             return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
         } 
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @PostMapping("/register") 
+    public ResponseEntity<Response> register(@RequestBody RegisterRequest request) {
+        RegisterResponse registerResponse = authService.register(request);
+        Response response = new Response("Success", registerResponse, 200);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @PostMapping("/login_google") 

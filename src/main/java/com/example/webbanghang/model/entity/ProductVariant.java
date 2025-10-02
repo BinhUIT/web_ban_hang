@@ -66,7 +66,7 @@ public class ProductVariant implements Comparable<ProductVariant> {
         this.name= request.getName();
         this.createAt = new Date();
         this.status= EEntitySatus.ENABLE;
-        this.quantity = 0;
+        this.quantity = request.getQuantity();
         this.canDelete=true;
     }
     public ProductVariant() {
