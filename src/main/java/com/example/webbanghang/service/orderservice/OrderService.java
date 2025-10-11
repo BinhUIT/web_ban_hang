@@ -98,10 +98,15 @@ public class OrderService {
     }
     private CreateOrderResponse handlePayment(Order order, EPaymentType paymentType) throws Exception {
         if (paymentType.equals(EPaymentType.COD)) {
+            order.setPaymentCode(System.currentTimeMillis());
             Payment payment = new Payment(order, "VND", "UNPAID", EPaymentType.COD);
+            order.setPayment(payment);
+            
             paymentRepo.save(payment);
+            orderRepo.save(order);
             return new CreateOrderResponse(order.getId(), "Success");
         }
+        
         return new CreateOrderResponse(order.getId(), paymentService.createPaymentLink(order));
     }
     public Page<Order> getUserOrderHistory(String email, Pageable pageable) {

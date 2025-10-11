@@ -50,6 +50,9 @@ public class PaymentService {
         PaymentData paymentData = PaymentData.builder().orderCode(currentTimeMillis).amount((int)order.getTotal()).items(items).returnUrl("http://localhost:8080/unsecure/check_out_success").cancelUrl("http://localhost:8080/unsecure/check_out_cancel").description("Checkout "+order.getId()).build();
         order.setPaymentCode(currentTimeMillis);
         order.setPayAt(new Date());
+        Payment payment = new Payment(order, "VND", "PAID", EPaymentType.ONLINE);
+        order.setPayment(payment);
+        paymentRepo.save(payment);
         orderRepo.save(order);
         CheckoutResponseData responseData= payOS.createPaymentLink(paymentData);
         return responseData.getCheckoutUrl();

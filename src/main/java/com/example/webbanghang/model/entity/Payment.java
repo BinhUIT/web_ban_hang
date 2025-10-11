@@ -110,6 +110,7 @@ public class Payment  {
         this.updateAt=null;
         this.status=status;
         this.paymentType = paymentType;
+        this.code =Long.toString(order.getPaymentCode());
     }
     public EPaymentType getPaymentType() {
         return paymentType;
