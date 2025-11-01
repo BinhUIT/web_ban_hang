@@ -44,6 +44,27 @@ public class Product {
     private long sold;
     private boolean isEnable;
     private String image;
+    private String forAge="";
+    private String forGender="";
+    private String forShape="";
+    public String getForAge() {
+        return this.forAge;
+    } 
+    public String getForGender() {
+        return this.forGender;
+    } 
+    public String getForShape() {
+        return this.forShape;
+    }
+    public void setForAge(String forAge) {
+        this.forAge = forAge;
+    } 
+    public void setForGender(String forGender) {
+        this.forGender= forGender;
+    } 
+    public void setForShape(String forShape) {
+        this.forShape = forShape;
+    }
     @OneToMany(mappedBy = "product") 
     private List<ProductVariant> productVariants;
     @JsonIgnore

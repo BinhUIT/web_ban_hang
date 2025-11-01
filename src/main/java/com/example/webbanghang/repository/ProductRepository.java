@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.example.webbanghang.model.entity.Product;
+import com.example.webbanghang.model.selectcolumninterface.ProductMiniInfo;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     
@@ -18,4 +19,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     public Page<Product> findByIsEnableAndMinPriceBetween(boolean isEnable, Integer from, Integer to, Pageable pageable); 
     public Page<Product> findByIsEnableAndCategory_IdIn(boolean isEnable, List<Long> listCatIds, Pageable pageable);
     public Page<Product> findAll(Pageable pageable);
+    public List<ProductMiniInfo> findByForAge(String forAge);
+    public List<ProductMiniInfo> findByForGender(String forGender);
+    public List<ProductMiniInfo> findByForShape(String forShape);
+    public List<ProductMiniInfo> findByForAgeOrForGenderOrForShape(String forAge, String forGender, String forShape);
 }

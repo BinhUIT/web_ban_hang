@@ -15,12 +15,21 @@ import org.springframework.web.server.ResponseStatusException;
 import com.example.webbanghang.model.entity.Product;
 import com.example.webbanghang.model.entity.ProductVariant;
 import com.example.webbanghang.model.esmodels.Products;
+import com.example.webbanghang.model.response.DetectResult;
 import com.example.webbanghang.model.response.Response;
 import com.example.webbanghang.service.productservice.ProductFilterService;
 import com.example.webbanghang.service.productservice.ProductQueryService;
 import com.example.webbanghang.service.productservice.ProductSearchService;
 import com.example.webbanghang.service.productservice.ProductService;
 import com.example.webbanghang.service.productservice.ProductVariantService;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.example.webbanghang.model.selectcolumninterface.ProductMiniInfo;
+import com.example.webbanghang.service.productservice.ProductRecommendationService;
+
 
 
 @RestController
@@ -30,12 +39,15 @@ public class ProductController {
     private final ProductQueryService productQueryService;
     private final ProductVariantService productVariantService;
     private final ProductFilterService productFilterService;
-    public ProductController(ProductService productService, ProductSearchService productSearchService, ProductQueryService productQueryService, ProductVariantService productVariantService, ProductFilterService productFilterService) {
+    private final ProductRecommendationService productRecommendationService;
+    public ProductController(ProductService productService, ProductSearchService productSearchService, ProductQueryService productQueryService, ProductVariantService productVariantService,
+     ProductFilterService productFilterService, ProductRecommendationService productRecommendationService) {
         this.productService= productService;
         this.productSearchService = productSearchService;
         this.productQueryService= productQueryService;
         this.productVariantService = productVariantService;
         this.productFilterService = productFilterService;
+        this.productRecommendationService = productRecommendationService;
     }
     @GetMapping("/unsecure/product/{id}")
     public Product getProductById(@PathVariable int id) {
@@ -60,6 +72,17 @@ public class ProductController {
        }
         
     }
+
+    @PostMapping("/unsecure/analyze_image")
+    public List<ProductMiniInfo> recommendFromImage(@RequestParam("file") MultipartFile file) {
+        try { 
+            return productRecommendationService.analyzeImage(file);
+        }
+        catch(IOException e) {
+            throw new RuntimeException("Error");
+        }
+    }
+    
     
     @GetMapping("/unsecure/all_product") 
     public List<Product> getAllProduct() {
