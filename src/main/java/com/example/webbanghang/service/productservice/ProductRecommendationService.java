@@ -67,7 +67,7 @@ public class ProductRecommendationService {
         if(data.getAge()>=70) {
             res[0]="Old";
         }
-        res[1]= data.getGender()==0?"Male":"Female";
+        res[1]= data.getGender()==false?"Male":"Female";
         res[2]=data.getBody_shape();
         return res;
     }

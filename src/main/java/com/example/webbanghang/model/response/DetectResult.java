@@ -2,11 +2,11 @@ package com.example.webbanghang.model.response;
 
 public class DetectResult {
     private int age;
-    private int gender;
+    private boolean gender;
     private String shape;
     private String body_shape;
 
-    public DetectResult(int age, String body_shape, int gender, String shape) {
+    public DetectResult(int age, String body_shape, boolean gender, String shape) {
         this.age = age;
         this.body_shape = body_shape;
         this.gender = gender;
@@ -24,11 +24,11 @@ public class DetectResult {
         this.age = age;
     }
 
-    public int getGender() {
+    public boolean getGender() {
         return gender;
     }
 
-    public void setGender(int gender) {
+    public void setGender(boolean gender) {
         this.gender = gender;
     }
 
