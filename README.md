@@ -1,7 +1,7 @@
 # 👗 Fashion Shop
 
 Dự án **Website bán hàng thời trang** được xây dựng bằng **React**, **Spring Boot**, **Redis** và **ElasticSearch**.  
-Mục tiêu của dự án là tạo một hệ thống thương mại điện tử đầy đủ, có thể tìm kiếm, quản lý đơn hàng và thanh toán trực tuyến.
+Mục tiêu của dự án là tạo một hệ thống bán hàng onlineonline, có thể tìm kiếm, quản lý đơn hàng và thanh toán trực tuyến.
 
 ---
 
@@ -137,7 +137,7 @@ Phần code còn cần được tối ưu và làm sạch hơn.
 Repo chứa source code phần redis:
 🔗 [Fashion Cart (Redis Cache)](https://github.com/BinhUIT/fashion_cart)
 Repo chứa source code cho server dùng để đề xuất sản phẩm
-🔗 [Recommendation Sercer](https://github.com/BinhUIT/recommendation_server)
+🔗 [Recommendation Server](https://github.com/BinhUIT/recommendation_server)
 
 
 
@@ -152,6 +152,11 @@ Repo chứa source code cho server dùng để đề xuất sản phẩm
 - **Payment Gateway:** PayOS  
 
 ---
+## ⚙️ 4. Cách chạy dự án
+B1: Clone repository
+B2: Cài đặt JDK-17 và Maven
+B3: Tạo file .env tại thư mục gốc của dự án và điền các thông tin trong file .env.example vào file vừa tạo
+B4: Chạy câu lệnh "mvn spring-boot::run" để chạy server
 
 ## 👤 Tác giả
 **Đặng Lê Bình**  
