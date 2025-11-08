@@ -88,41 +88,9 @@ Thống kê doanh thu, đơn hàng và các chỉ số kinh doanh.
 
 ---
 
-## 💬 2. Nhận xét
-
-Dự án đã hoàn thiện hầu hết các tính năng chính, tuy nhiên vẫn còn một số phần đang phát triển:
-
-- **OAuth2** mới được triển khai phía Backend, chưa tích hợp lên Frontend.  
-- **Chức năng giảm giá** chưa hoàn chỉnh.  
-
-Phần code còn cần được tối ưu và làm sạch hơn.  
-Repo chứa source code phần redis:
-🔗 [Fashion Cart (Redis Cache)](https://github.com/BinhUIT/fashion_cart)
-Repo chứa source code cho server dùng để đề xuất sản phẩm
-🔗 [Recommendation Sercer### 👩‍💼 1.8 Quản lý người dùng (Admin)  
-Trang cho admin xem và quản lý thông tin người dùng.  
-![Admin User management](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084823.png?raw=true)
-
----
-
-### 🧰 1.9 Quản lý sản phẩm (Admin)  
-Cho phép CRUD sản phẩm và biến thể.  
-Nếu sản phẩm/biến thể thuộc đơn hàng có trạng thái **SHIPPING** hoặc **PENDING** thì không thể xóa.  
-![Admin Product management](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084847.png?raw=true)
-
----
-
-### 📋 1.10 Quản lý đơn hàng (Admin)  
-Xem danh sách và chi tiết từng đơn hàng.  
-![List order](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20085026.png?raw=true)
-![Order detail](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20093708.png?raw=true)
-
----
-
-### 📊 1.11 Trang thống kê  
-Thống kê doanh thu, đơn hàng và các chỉ số kinh doanh.  
-![Statistic 1](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084923.png?raw=true)
-![Statistic 2](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084930.png?raw=true)
+### 🤖 1.12 Chức năng đề xuất
+Client gửi request chứa  ảnh lên server chính, server chính sẽ tiếp tục gửi request đến server python, dùng dữ liệu server python trả về để đề xuất sản phẩm.
+![Recommendation 1](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-11-08%20135959.png?raw=true)
 
 ---
 
@@ -154,7 +122,7 @@ Repo chứa source code cho server dùng để đề xuất sản phẩm
 ---
 ## 🚀 4. Cách chạy dự án
 - B1: Clone repository
-- B2: Cài đặt JDK-17 và Maven
+- B2: Cài đặt JDK-17 và Maven 3.9.9
 - B3: Tạo file .env tại thư mục gốc của dự án và điền các thông tin trong file .env.example vào file vừa tạo
 - B4: Chạy câu lệnh "mvn spring-boot::run" để chạy server
 
