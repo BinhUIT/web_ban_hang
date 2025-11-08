@@ -88,18 +88,7 @@ Thống kê doanh thu, đơn hàng và các chỉ số kinh doanh.
 
 ---
 
-## 💬 2. Nhận xét
-
-Dự án đã hoàn thiện hầu hết các tính năng chính, tuy nhiên vẫn còn một số phần đang phát triển:
-
-- **OAuth2** mới được triển khai phía Backend, chưa tích hợp lên Frontend.  
-- **Chức năng giảm giá** chưa hoàn chỉnh.  
-
-Phần code còn cần được tối ưu và làm sạch hơn.  
-Repo chứa source code phần redis:
-🔗 [Fashion Cart (Redis Cache)](https://github.com/BinhUIT/fashion_cart)
-Repo chứa source code cho server dùng để đề xuất sản phẩm
-🔗 [Recommendation Sercer### 👩‍💼 1.8 Quản lý người dùng (Admin)  
+### 👩‍💼 1.8 Quản lý người dùng (Admin)  
 Trang cho admin xem và quản lý thông tin người dùng.  
 ![Admin User management](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084823.png?raw=true)
 
