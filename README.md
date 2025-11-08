@@ -153,10 +153,10 @@ Repo chứa source code cho server dùng để đề xuất sản phẩm
 
 ---
 ## ⚙️ 4. Cách chạy dự án
-B1: Clone repository
-B2: Cài đặt JDK-17 và Maven
-B3: Tạo file .env tại thư mục gốc của dự án và điền các thông tin trong file .env.example vào file vừa tạo
-B4: Chạy câu lệnh "mvn spring-boot::run" để chạy server
+- B1: Clone repository
+- B2: Cài đặt JDK-17 và Maven
+- B3: Tạo file .env tại thư mục gốc của dự án và điền các thông tin trong file .env.example vào file vừa tạo
+- B4: Chạy câu lệnh "mvn spring-boot::run" để chạy server
 
 ## 👤 Tác giả
 **Đặng Lê Bình**  
