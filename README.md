@@ -86,32 +86,7 @@ Thống kê doanh thu, đơn hàng và các chỉ số kinh doanh.
 ![Statistic 1](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084923.png?raw=true)
 ![Statistic 2](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084930.png?raw=true)
 
----
 
-### 👩‍💼 1.8 Quản lý người dùng (Admin)  
-Trang cho admin xem và quản lý thông tin người dùng.  
-![Admin User management](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084823.png?raw=true)
-
----
-
-### 🧰 1.9 Quản lý sản phẩm (Admin)  
-Cho phép CRUD sản phẩm và biến thể.  
-Nếu sản phẩm/biến thể thuộc đơn hàng có trạng thái **SHIPPING** hoặc **PENDING** thì không thể xóa.  
-![Admin Product management](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084847.png?raw=true)
-
----
-
-### 📋 1.10 Quản lý đơn hàng (Admin)  
-Xem danh sách và chi tiết từng đơn hàng.  
-![List order](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20085026.png?raw=true)
-![Order detail](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20093708.png?raw=true)
-
----
-
-### 📊 1.11 Trang thống kê  
-Thống kê doanh thu, đơn hàng và các chỉ số kinh doanh.  
-![Statistic 1](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084923.png?raw=true)
-![Statistic 2](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084930.png?raw=true)
 
 ---
 
