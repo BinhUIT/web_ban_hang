@@ -25,7 +25,7 @@ Người dùng có thể xem chi tiết sản phẩm và chọn biến thể (m�
 
 ### 🛒 1.3 Trang giỏ hàng  
 Giỏ hàng được lưu trên **Redis** để giảm tải cho cơ sở dữ liệu.  
-Trước đây giỏ hàng được lưu trực tiếp trong DB, nhưng dễ gây quá tải nếu người dùng spam nên em đã chuyển sang lưu tạm trên Redis (chỉ lưu id biến thể, số lượng và user id, khi hiển thị thì sẽ lấy ảnh, tên,.. từ db chính).
+Trước đây giỏ hàng được lưu trực tiếp trong DB, nhưng dễ gây quá tải nếu người dùng spam nên giỏ hàng đã được chuyển sang lưu tạm trên Redis (chỉ lưu id biến thể, số lượng và user id, khi hiển thị thì sẽ lấy ảnh, tên,.. từ db chính).
 
 ![Cart Page](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20083357.png?raw=true)
 
@@ -52,7 +52,7 @@ Người dùng có thể xem lại các đơn đã mua và theo dõi tình trạ
 
 ### 🔍 1.7 Tìm kiếm sản phẩm (ElasticSearch)  
 Cho phép tìm kiếm **có gợi ý từ đồng nghĩa** và **chấp nhận sai chính tả nhẹ**.  
-*(Hiện tại em mới cấu hình thử một vài từ đơn giản cho elastic search.)*
+*(Hiện tại dự án chỉ mớimới cấu hình thử một vài từ đơn giản cho elastic search.)*
 
 - **Tìm kiếm đồng nghĩa:**  
   ![Search 1](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084745.png?raw=true)
@@ -96,12 +96,50 @@ Dự án đã hoàn thiện hầu hết các tính năng chính, tuy nhiên vẫ
 - **Chức năng giảm giá** chưa hoàn chỉnh.  
 
 Phần code còn cần được tối ưu và làm sạch hơn.  
-Em đang thực hiện **refactor** ở một repository riêng:
-
-🔗 [Fashion Backend (Refactor)](https://github.com/BinhUIT/fashion_backend)  
+Repo chứa source code phần redis:
 🔗 [Fashion Cart (Redis Cache)](https://github.com/BinhUIT/fashion_cart)
+Repo chứa source code cho server dùng để đề xuất sản phẩm
+🔗 [Recommendation Sercer### 👩‍💼 1.8 Quản lý người dùng (Admin)  
+Trang cho admin xem và quản lý thông tin người dùng.  
+![Admin User management](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084823.png?raw=true)
 
-> 🙏 Em xin chân thành cảm ơn anh/chị đã dành thời gian để xem và góp ý cho dự án của em!
+---
+
+### 🧰 1.9 Quản lý sản phẩm (Admin)  
+Cho phép CRUD sản phẩm và biến thể.  
+Nếu sản phẩm/biến thể thuộc đơn hàng có trạng thái **SHIPPING** hoặc **PENDING** thì không thể xóa.  
+![Admin Product management](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084847.png?raw=true)
+
+---
+
+### 📋 1.10 Quản lý đơn hàng (Admin)  
+Xem danh sách và chi tiết từng đơn hàng.  
+![List order](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20085026.png?raw=true)
+![Order detail](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20093708.png?raw=true)
+
+---
+
+### 📊 1.11 Trang thống kê  
+Thống kê doanh thu, đơn hàng và các chỉ số kinh doanh.  
+![Statistic 1](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084923.png?raw=true)
+![Statistic 2](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084930.png?raw=true)
+
+---
+
+## 💬 2. Nhận xét
+
+Dự án đã hoàn thiện hầu hết các tính năng chính, tuy nhiên vẫn còn một số phần đang phát triển:
+
+- **OAuth2** mới được triển khai phía Backend, chưa tích hợp lên Frontend.  
+- **Chức năng giảm giá** chưa hoàn chỉnh.  
+
+Phần code còn cần được tối ưu và làm sạch hơn.  
+Repo chứa source code phần redis:
+🔗 [Fashion Cart (Redis Cache)](https://github.com/BinhUIT/fashion_cart)
+Repo chứa source code cho server dùng để đề xuất sản phẩm
+🔗 [Recommendation Sercer](https://github.com/BinhUIT/recommendation_server)
+
+
 
 ---
 
