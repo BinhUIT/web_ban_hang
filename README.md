@@ -86,13 +86,13 @@ Thống kê doanh thu, đơn hàng và các chỉ số kinh doanh.
 ![Statistic 1](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084923.png?raw=true)
 ![Statistic 2](https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-10-23%20084930.png?raw=true)
 
-
-
 ---
 
 ### 🤖 1.12 Chức năng đề xuất
 Client gửi request chứa  ảnh lên server chính, server chính sẽ tiếp tục gửi request đến server python, dùng dữ liệu server python trả về để đề xuất sản phẩm
 ![Recommendation 1] (https://github.com/BinhUIT/web_ban_hang/blob/master/project_images/Screenshot%202025-11-08%20135959.png?raw=true)
+
+---
 
 ## 💬 2. Nhận xét
 
