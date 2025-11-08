@@ -102,9 +102,9 @@ Dự án đã hoàn thiện hầu hết các tính năng chính, tuy nhiên vẫ
 - **Chức năng giảm giá** chưa hoàn chỉnh.  
 
 Phần code còn cần được tối ưu và làm sạch hơn.  
-Repo chứa source code phần redis:
+- Repo chứa source code phần redis:
 🔗 [Fashion Cart (Redis Cache)](https://github.com/BinhUIT/fashion_cart)
-Repo chứa source code cho server dùng để đề xuất sản phẩm
+- Repo chứa source code cho server dùng để đề xuất sản phẩm
 🔗 [Recommendation Server](https://github.com/BinhUIT/recommendation_server)
 
 
